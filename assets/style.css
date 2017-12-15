@@ -1,0 +1,33 @@
+html, body {
+  background:rgba(0,0,0,0.8);
+  color:white;
+}
+#preview {
+  background:rgba(0,0,0,0.1);
+  position:absolute;
+  top:0px;
+  left:0px;
+  border:1px solid white;
+}
+#html-tree {
+  background:rgba(0,0,0,0.3);
+  border:1px solid white;
+  position:absolute;
+}
+#html-tree-head {
+  background:rgba(0,0,0,0.5);
+  position:absolute;
+  border:1px solid white;
+  text-align:center;
+}
+#attribute-editor {
+  background:rgba(0,0,0,0.3);
+  border:1px solid white;
+  position:absolute;
+}
+#attribute-head{
+  background:rgba(0,0,0,0.5);
+  position:absolute;
+  border:1px solid white;
+  text-align: center;
+}
