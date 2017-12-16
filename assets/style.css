@@ -80,7 +80,7 @@ html, body {
   font-size:4vh;
 }
 td {
-  border:1px solid teal;
+  /*border:1px solid teal;*/
   background:black;
 }
 tr :hover {

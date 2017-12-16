@@ -16,6 +16,79 @@ elements = [
     tag_start : "html",
     tag_end : "/html",
     description : "Sets the webpage title"
+  },
+  {
+    display_name : "Body",
+    tag_start : "body",
+    tag_end : "/body",
+    description : "Element containing the page content"
+  },
+  {
+    display_name : "Paragraph",
+    tag_start : "p",
+    tag_end : "/p",
+    description : "A paragraph element"
+  },
+  {
+    display_name : "[FORMAT] Bold",
+    tag_start : "b",
+    tag_end : "/b",
+    description : "Formats children text bold"
+  },
+  {
+    display_name : "[FORMAT] Italics",
+    tag_start : "i",
+    tag_end : "/i",
+    description : "Formats children text in italics"
+  },
+  {
+    display_name : "[FORMAT] Underline",
+    tag_start : "u",
+    tag_end : "/u",
+    description : "Underlines children text"
+  },
+  {
+    display_name : "Heading 1",
+    tag_start : "h1",
+    tag_end : "/h1",
+    description : "The biggest heading"
+  },
+  {
+    display_name : "Heading 2",
+    tag_start : "h2",
+    tag_end : "/h2",
+    description : "The second biggest heading"
+  },
+  {
+    display_name : "Heading 3",
+    tag_start : "h3",
+    tag_end : "/h3",
+    description : "The third biggest heading"
+  },
+  {
+    display_name : "Heading 4",
+    tag_start : "h4",
+    tag_end : "/h4",
+    description : "The third smallest heading"
+  },
+  {
+    display_name : "Heading 5",
+    tag_start : "h5",
+    tag_end : "/h5",
+    description : "The second smallest heading"
+  },
+  {
+    display_name : "Heading 6",
+    tag_start : "h6",
+    tag_end : "/h6",
+    description : "The smallest heading"
+  },
+  {
+    display_name : "Image",
+    tag_start : "img",
+    tag_start_end : "/",
+    tag_end : "",
+    description : "An image element"
   }
 ]
 function loadElementChooser(){
