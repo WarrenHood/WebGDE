@@ -92,7 +92,7 @@ elements = [
   }
 ]
 function loadElementChooser(){
-  var htm = "<table style='border-collapse:collapse;position:absolute;width:"+(window.innerWidth*0.25-2)+"px;border:1px solid grey;'>";
+  var htm = "<table style='border-collapse:collapse;width:"+(window.innerWidth*0.25-2)+"px;border:1px solid grey;'>";
   htm += "<tr style='color:red;'><td class='selected'>Element</td><td overflow:scroll;>Description</td></tr>";
   for(var i=0; i<elements.length; i++){
     var func = "document.getElementsByClassName(\"selected\")[0].className = \"\";\
