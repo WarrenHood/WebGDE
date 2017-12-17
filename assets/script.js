@@ -93,11 +93,23 @@ elements = [
 ]
 function loadElementChooser(){
   var htm = "<table style='border-collapse:collapse;width:"+(window.innerWidth*0.25-2)+"px;border:1px solid grey;'>";
-  htm += "<tr style='color:red;'><td class='selected'>Element</td><td overflow:scroll;>Description</td></tr>";
+  htm += "<tr style='color:red;'><td>Element</td><td overflow:scroll;>Description</td></tr>";
   for(var i=0; i<elements.length; i++){
-    var func = "document.getElementsByClassName(\"selected\")[0].className = \"\";\
-    document.getElementById(\""+i+"\").className = \"selected\";";
-    htm += "<tr onclick='javascript: "+func+"'><td id='"+i+"' >"+elements[i].display_name;
+    var func = "if(document.getElementsByClassName(\"selected\").length)\
+    document.getElementsByClassName(\"selected\")[0].className = \"\";\
+    document.getElementById(\"row"+i+"\").className = \"selected\";";
+    var mouseover = "var current = document.getElementById(\"row"+i+"\");\
+    current.style.background = \"black\";\
+    current.style.color = \"orange\";\
+    ";
+    var mouseout = "var current = document.getElementById(\"row"+i+"\");\
+    current.style.background = \"\";\
+    current.style.color = \"\";\
+    \
+    ";
+    htm += "<tr onmouseover='javascript: "+mouseover+"' \
+     onmouseout='javascript: "+mouseout+" '\
+    onclick='javascript: "+func+"' id='row"+i+"'><td id='"+i+"' >"+elements[i].display_name;
     htm += "</td><td>"+elements[i].description;
     htm += "</td></tr>";
   }
@@ -117,8 +129,8 @@ window.onload = function(){
   element_head.style.height = window.innerHeight*0.05 - 2 + "px";
   element_head.style.left = window.innerWidth*0.45 + 1 + "px";
   element_pane.style.width = window.innerWidth*0.25 - 2 + "px";
-  element_pane.style.height = window.innerHeight*0.95 - 2 + "px";
-  element_pane.style.top = window.innerHeight*0.05 + 1 + "px";
+  element_pane.style.height = window.innerHeight*0.41 - 2 + "px";
+  element_pane.style.top = window.innerHeight*0.09 + 1 + "px";
   element_pane.style.left = window.innerWidth*0.45 + 1 + "px";
   preview_pane.style.height = window.innerHeight*0.5 - 2 + "px";
   preview_pane.style.width = window.innerWidth*0.45 - 2 + "px";

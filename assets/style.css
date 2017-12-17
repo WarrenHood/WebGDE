@@ -10,12 +10,16 @@ html, body {
   left:1px;
   border:1px solid white;
 }
+::-webkit-scrollbar {
+display: none;
+}
 #element-chooser {
   background:rgba(0,0,0,0.3);
   border:1px solid white;
   position:absolute;
   overflow-x:hidden;
   overflow-y:auto;
+
 }
 #element-head {
   background:rgba(0,0,0,0.5);
@@ -81,12 +85,9 @@ html, body {
 }
 td {
   /*border:1px solid teal;*/
-  background:black;
-}
-tr :hover {
-  color: green;
-  background:white;
+  background:rgba(0,0,0,0.3);
 }
 .selected {
-  color:orange;
+  color:green;
+  background:rgb(255,255,255);
 }
