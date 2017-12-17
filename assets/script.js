@@ -1,5 +1,23 @@
 elements = [
   {
+    display_name : "[FORMAT] Bold",
+    tag_start : "b",
+    tag_end : "/b",
+    description : "Formats children text bold"
+  },
+  {
+    display_name : "[FORMAT] Italics",
+    tag_start : "i",
+    tag_end : "/i",
+    description : "Formats children text in italics"
+  },
+  {
+    display_name : "[FORMAT] Underline",
+    tag_start : "u",
+    tag_end : "/u",
+    description : "Underlines children text"
+  },
+  {
     display_name : "HTML document",
     tag_start : "html",
     tag_end : "/html",
@@ -28,24 +46,6 @@ elements = [
     tag_start : "p",
     tag_end : "/p",
     description : "A paragraph element"
-  },
-  {
-    display_name : "[FORMAT] Bold",
-    tag_start : "b",
-    tag_end : "/b",
-    description : "Formats children text bold"
-  },
-  {
-    display_name : "[FORMAT] Italics",
-    tag_start : "i",
-    tag_end : "/i",
-    description : "Formats children text in italics"
-  },
-  {
-    display_name : "[FORMAT] Underline",
-    tag_start : "u",
-    tag_end : "/u",
-    description : "Underlines children text"
   },
   {
     display_name : "Heading 1",
@@ -124,10 +124,15 @@ window.onload = function(){
   attribute_editor = document.getElementById("attribute-editor");
   attribute_head = document.getElementById("attribute-head");
   element_pane = document.getElementById("element-chooser");
+  element_search = document.getElementById("element-search");
   element_head = document.getElementById("element-head");
   element_head.style.width = window.innerWidth*0.25 - 2 + "px";
   element_head.style.height = window.innerHeight*0.05 - 2 + "px";
   element_head.style.left = window.innerWidth*0.45 + 1 + "px";
+  element_search.style.height = window.innerHeight*0.04 - 2 + "px";
+  element_search.style.width = window.innerWidth*0.25 - 2 + "px";
+  element_search.style.top = window.innerHeight*0.05 + 1 + "px";
+  element_search.style.left = window.innerWidth*0.45 + 1 + "px";
   element_pane.style.width = window.innerWidth*0.25 - 2 + "px";
   element_pane.style.height = window.innerHeight*0.41 - 2 + "px";
   element_pane.style.top = window.innerHeight*0.09 + 1 + "px";

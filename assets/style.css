@@ -19,7 +19,12 @@ display: none;
   position:absolute;
   overflow-x:hidden;
   overflow-y:auto;
-
+}
+#element-search {
+  background:rgba(0,0,0,0.2);
+  position:absolute;
+  border:1px solid white;
+  color:green;
 }
 #element-head {
   background:rgba(0,0,0,0.5);
