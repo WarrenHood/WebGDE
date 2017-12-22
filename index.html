@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html oncontextmenu="return false;">
   <head>
     <title>WebGDE</title>
     <link rel="stylesheet" type="text/css" href="assets/style.css"/>
@@ -11,16 +11,16 @@
     </iframe>
     <div id="html-tree-head">
       Tree Editor
-      <div id="addup" class="treebutton">
+      <div id="addup" class="treebutton" onclick="addAbove();return false;">
         []<sup><span>+</span></sup>
       </div>
-      <div id="addin" class="treebutton">
+      <div id="addin" class="treebutton" onclick="addInside();return false;">
         [<span>+</span>]
       </div>
-      <div id="adddown" class="treebutton">
+      <div id="adddown" class="treebutton" onclick="addBelow();return false;">
         []<sub><span>+</span></sub>
       </div>
-      <div id="delete" class="treebutton">
+      <div id="delete" class="treebutton" onclick="if(!(tree_selected == doc))tree_selected.remove();update_pane();">
         <span style="color:red;cursor:pointer;font-size:3vh;">
           -
         </span>
