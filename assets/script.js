@@ -1,3 +1,74 @@
+global_elts = [];
+function stringrep(char,reps){
+  var s = "";
+  for(var i = 0;i < reps;i++)s+=char;
+  return s;
+};
+function elt(start_tag,end_tag,display_name){
+  this.global_id = global_elts.length;
+  this.display_name = display_name || start_tag;
+  this.start_tag = start_tag;
+  this.end_tag = end_tag;
+  this.inner = "";
+  this.children = [];
+  this.parent = null;
+  this.atts = [];
+  this.makeChild = function(child_start,child_end,child_display){
+    var child = new elt(child_start,child_end,child_display);
+    return this.addChild(child);
+  }
+  this.addChild = function(child){
+    this.children.push(child);
+    child.parent = this;
+    return child;
+  };
+  this.removeChild = function(child){
+    child.remove();
+  };
+  this.remove = function(){
+    if(this.parent)for(var j=0; j<this.parent.children.length;j++){
+      if(this.parent.children[j] == this){
+        this.parent.children.splice(j,1);
+        break;
+      };
+    };
+  };
+  this.attFind = function(att_name){
+    for(var i=0; i<this.atts.length;i++){
+      if(this.atts[i].name == att_name)return this.atts[i];
+    };
+  };
+  this.attEdit = function(att_name,att_val){
+    var att = this.attFind(att_name);
+    if(!att){
+      att = {name:att_name,val:att_val};
+      this.atts.push(att);
+    };
+    att.val = att_val;
+  };
+  global_elts.push(this);
+  return this;
+}
+function mapOut(root,level){
+  level = level || 0;
+  var str = stringrep("-",level) + root.display_name + "<br>";
+  for(var i=0; i<root.children.length;i++){
+    str += mapOut(root.children[i],level+1);
+  };
+  return str;
+}
+
+doc = new elt("html","/html","document");
+doc_head = doc.makeChild("head","/head");
+doc_body = doc.makeChild("body","/body");
+head_style = doc_head.makeChild("style","/style");
+body_para1 = doc_body.makeChild("p","/p");
+body_div1 = doc_body.makeChild("div","/div");
+div1_span1 = body_div1.makeChild("span","/span");
+div1_div2 = body_div1.makeChild("div","/div");
+div2_p1 = div1_div2.makeChild("p","/p");
+div2_h1 = div1_div2.makeChild("h1","/h1");
+
 elements = [
   {
     display_name : "[FORMAT] Bold",
@@ -86,7 +157,6 @@ elements = [
   {
     display_name : "Image",
     tag_start : "img",
-    tag_start_end : "/",
     tag_end : "",
     description : "An image element"
   }
@@ -117,7 +187,6 @@ function loadElementChooser(){
   element_pane.innerHTML = htm;
 }
 window.onload = function(){
-  try{
   preview_pane = document.getElementById("preview");
   html_tree_pane = document.getElementById("html-tree");
   html_tree_head = document.getElementById("html-tree-head");
@@ -156,8 +225,4 @@ window.onload = function(){
   attribute_head.style.top = window.innerHeight*0.5 + 1 + "px";
   attribute_head.style.left = window.innerWidth*0.7 + 1 + "px";
   loadElementChooser();
-  }
-  catch(e){
-    alert(e);
-  }
 }
