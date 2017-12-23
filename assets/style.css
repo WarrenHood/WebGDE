@@ -14,20 +14,21 @@ html, body {
   border:0.5px solid black;
   height:2.5vh;
   font-size:2.5vh;
+  border-spacing: 10px;
 }
 #preview {
   background:rgba(0,0,0,0.1);
   position:absolute;
   top:1px;
   left:1px;
-  border:1px solid white;
+  border:1px solid black;
 }
 ::-webkit-scrollbar {
 display: none;
 }
 #element-chooser {
   background:rgba(0,0,0,0.3);
-  border:1px solid white;
+  border:1px solid black;
   position:absolute;
   overflow-x:hidden;
   overflow-y:auto;
@@ -35,27 +36,28 @@ display: none;
 #element-search {
   background:rgba(0,0,0,0.2);
   position:absolute;
-  border:1px solid white;
+  border:1px solid black;
   color:green;
 }
 #element-head {
   background:rgba(0,0,0,0.5);
   position:absolute;
-  border:1px solid white;
+  border:1px solid black;
   text-align:center;
   font-size:4vh;
   top:1px;
 }
 #html-tree {
   background:rgba(0,0,0,0.3);
-  border:1px solid white;
+  border:1px solid black;
   position:absolute;
   background:black;
+  overflow:auto;
 }
 #html-tree-head {
   background:rgba(0,0,0,0.5);
   position:absolute;
-  border:1px solid white;
+  border:1px solid black;
   text-align:center;
   font-size:4vh;
 }
@@ -91,13 +93,13 @@ display: none;
 }
 #attribute-editor {
   background:rgba(0,0,0,0.3);
-  border:1px solid white;
+  border:1px solid black;
   position:absolute;
 }
 #attribute-head{
   background:rgba(0,0,0,0.5);
   position:absolute;
-  border:1px solid white;
+  border:1px solid black;
   text-align: center;
   font-size:4vh;
 }

@@ -1,11 +1,22 @@
 global_elts = [];
+tree_selected = null;
 doc = new elt("html","/html","document");
-tree_selected = doc;
 function stringrep(char,reps){
   var s = "";
   for(var i = 0;i < reps;i++)s+=char;
   return s;
 };
+function loadAtts(){
+  var table = "<table style='width:inherit;border-collapse:collapse;'>";
+  table += "<tr><td>Attribute</td><td>Value</td></tr>";
+  if(tree_selected)for(var i=0;i<tree_selected.atts.length;i++){
+
+    table+= "<tr><td>"+tree_selected.atts[i].name + "</td>"
+    + "<td>"+tree_selected.atts[i].val+"</td></tr>";
+  }
+  table += "</table>";
+  attribute_editor.innerHTML = table;
+}
 function getElt(global_id){
   return global_elts[global_id];
 }
@@ -79,7 +90,8 @@ function addInside(){
   update_pane();
 }
 function update_pane(){
-  html_tree_pane.innerHTML = "<table cellspacing='0' cellpadding='0' id='tree_table'>"+ mapOut(doc)+"</table>";
+  html_tree_pane.innerHTML = "<table cellspacing='2' cellpadding='0' id='tree_table'>"+ mapOut(doc)+"</table>";
+  loadAtts();
 }
 function mapOut(root,level){
   level = level || 0;
@@ -97,9 +109,9 @@ function mapOut(root,level){
     "background:red;border:0.5px solid darkred;"
   );
   var str = "<tr>"+stringrep("<td style='"+init_block_style+"'></td>",level) +"<td><div style='\
-  "+((root == tree_selected)?
-  "color:red;background:white;":
-  "color:black;background:grey;")
+  "+((tree_selected && root == tree_selected)?
+  "color:black;background:purple;":
+  "color:white;background:purple;")
   +
   "\
     border:0.5px solid black;border-right:none;\
