@@ -91,15 +91,21 @@ function mapOut(root,level){
   tree_selected = currentElt;\
   update_pane();\
   return false;";
-  var str = "<tr>"+stringrep("<td style='background:rgba(0,0,255,1);'></td>",level) +"<td style='\
+  var init_block_style = (
+    (root.show_children)?
+    "background:lightgreen;border:0.5px solid darkgreen;":
+    "background:red;border:0.5px solid darkred;"
+  );
+  var str = "<tr>"+stringrep("<td style='"+init_block_style+"'></td>",level) +"<td><div style='\
   "+((root == tree_selected)?
   "color:red;background:white;":
   "color:black;background:grey;")
   +
   "\
-  border:0.5px solid black;border-right:none;'\
+    border:0.5px solid black;border-right:none;\
+    height:inherit;width:fit-content;z-index:1;  '\
    onclick='"+left_click+"' \
-   oncontextmenu=\""+right_click+"\">"+root.display_name+"</td>" + stringrep("<td style='border:none;'></td>",getDepth(doc)-1-level)+"</tr>";
+   oncontextmenu=\""+right_click+"\">"+root.display_name+"</div></td>" + stringrep("<td style='border:none;'></td>",getDepth(doc)*2-1-level)+"</tr>";
   if(root.show_children)for(var i=0; i<root.children.length;i++){
     str += mapOut(root.children[i],level+1);
   };
@@ -244,7 +250,9 @@ function loadElementChooser(){
   htm += "</table>";
   element_pane.innerHTML = htm;
 }
-window.onload = function(){
+loadfunc = function(){
+  last_width = window.innerWidth;
+  last_height = window.innerHeight;
   preview_pane = document.getElementById("preview");
   html_tree_pane = document.getElementById("html-tree");
   html_tree_head = document.getElementById("html-tree-head");
@@ -283,5 +291,16 @@ window.onload = function(){
   attribute_head.style.top = window.innerHeight*0.5 + 1 + "px";
   attribute_head.style.left = window.innerWidth*0.7 + 1 + "px";
   loadElementChooser();
+  window.onkeyup = function(e){
+    e = e || event;
+    if(e.keyCode == 46){
+      if(!(tree_selected == doc))tree_selected.remove();update_pane();
+    }
+  }
   update_pane();
 }
+window.onload = loadfunc;
+setInterval(function(){
+  if(window.innerWidth != last_width || window.innerHeight != last_height)
+    loadfunc();
+},1000);
