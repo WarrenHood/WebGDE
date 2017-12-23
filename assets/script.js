@@ -10,9 +10,15 @@ function loadAtts(){
   var table = "<table style='width:inherit;border-collapse:collapse;'>";
   table += "<tr><td>Attribute</td><td>Value</td></tr>";
   if(tree_selected)for(var i=0;i<tree_selected.atts.length;i++){
-
-    table+= "<tr><td>"+tree_selected.atts[i].name + "</td>"
-    + "<td>"+tree_selected.atts[i].val+"</td></tr>";
+    var select_att = "last_att = "+i+";";
+    var update_att = "\
+    var current_att = tree_selected.atts["+i+"];\
+    var new_name = document.getElementById(\"att_name_"+i+"\").value;\
+    var new_val = document.getElementById(\"att_val_"+i+"\").value;\
+    current_att.name = new_name;\
+    current_att.val = new_val;";
+    table+= "<tr><td><input onfocus='"+select_att+"' onkeyup='"+update_att+"' size=20 id='att_name_"+i+"' value='"+tree_selected.atts[i].name + "'></td>"
+    + "<td><textarea onfocus='"+select_att+"' onkeyup='"+update_att+"' id='att_val_"+i+"'>"+tree_selected.atts[i].val+"</textarea></td></tr>";
   }
   table += "</table>";
   attribute_editor.innerHTML = table;
@@ -57,6 +63,9 @@ function elt(start_tag,end_tag,display_name){
       if(this.atts[i].name == att_name)return this.atts[i];
     };
   };
+  this.removeAtt = function(i){
+    this.atts.splice(i,1);
+  }
   this.attEdit = function(att_name,att_val){
     var att = this.attFind(att_name);
     if(!att){
@@ -235,7 +244,7 @@ elements = [
   }
 ]
 function loadElementChooser(){
-  var htm = "<table style='border-collapse:collapse;width:"+(window.innerWidth*0.25-2)+"px;border:1px solid grey;'>";
+  var htm = "<table style='border-collapse:collapse;width:"+(window.innerWidth*0.25-2)+"px;'>";
   htm += "<tr style='color:red;'><td>Element</td><td overflow:scroll;>Description</td></tr>";
   for(var i=0; i<elements.length; i++){
     var func = "if(document.getElementsByClassName(\"selected\").length)\

@@ -27,8 +27,9 @@ html, body {
 display: none;
 }
 #element-chooser {
-  background:rgba(0,0,0,0.3);
+  background:black;
   border:1px solid black;
+  border-right:1px solid grey;
   position:absolute;
   overflow-x:hidden;
   overflow-y:auto;
@@ -37,6 +38,7 @@ display: none;
   background:rgba(0,0,0,0.2);
   position:absolute;
   border:1px solid black;
+  border-right:1px solid grey;
   color:green;
 }
 #element-head {
@@ -52,6 +54,7 @@ display: none;
   border:1px solid black;
   position:absolute;
   background:black;
+  border-left:1px solid grey;
   overflow:auto;
 }
 #html-tree-head {
@@ -92,9 +95,26 @@ display: none;
   left: 1vh;
 }
 #attribute-editor {
-  background:rgba(0,0,0,0.3);
+  background:black;
   border:1px solid black;
   position:absolute;
+}
+#attribute-editor td{
+  height:4vh;
+  border:0.1px solid grey;
+}
+#attribute-editor input{
+  background:rgba(0,0,0,0);
+  color:teal;
+  height:inherit;
+  border:none;
+}
+#attribute-editor textarea{
+  height:inherit;
+  overflow-y:auto;
+  color:red;
+  background:rgba(0,0,0,0);
+  border:none;
 }
 #attribute-head{
   background:rgba(0,0,0,0.5);
@@ -103,10 +123,29 @@ display: none;
   text-align: center;
   font-size:4vh;
 }
-#attribute-editor td {
-  /*border:1px solid teal;*/
-  background:rgba(0,0,0,0.3);
+#att-add{
+  color:teal;
+  cursor:pointer;
+  font-size:4vh;
+  position:absolute;
+  right:0px;
+  top:0px;
 }
+#att-add:hover {
+  color:white;
+}
+#att-rem{
+  color:red;
+  cursor:pointer;
+  font-size:4vh;
+  position:absolute;
+  left:0px;
+  top:0px;
+}
+#att-add:hover {
+  color:white;
+}
+
 .selected {
   color:green;
   background:rgb(255,255,255);
