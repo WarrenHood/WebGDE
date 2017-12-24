@@ -1,6 +1,29 @@
 global_elts = [];
 tree_selected = null;
-doc = new elt("html","/html","document");
+element_chosen = null;
+tab_spaces = 2;
+doc = new elt("","","document");
+function htmlify(root,tabdepth){
+  tabdepth = tabdepth || 0;
+  var str = "";
+  if(root.start_tag){
+    str += stringrep(stringrep(" ",tabdepth),tab_spaces)+"<"+root.start_tag;
+    for(var i=0; i<root.atts.length; i++){
+      str += " " + root.atts[i].name;
+      if(root.atts[i].val)str += "=" + root.atts[i].val;
+    }
+    str += ">\n";
+  }
+  if(root.inner){
+    if(root.start_tag && root.end_tag)str += stringrep(stringrep(" ",tabdepth+1),tab_spaces);
+    str += root.inner + "\n";
+  }
+  else
+    for(var i=0; i<root.children.length; i++)str += htmlify(root.children[i],tabdepth+1);
+  if(root.end_tag)str += "<" + root.end_tag + ">";
+  str += "\n";
+  return str;
+}
 function stringrep(char,reps){
   var s = "";
   for(var i = 0;i < reps;i++)s+=char;
@@ -17,8 +40,8 @@ function loadAtts(){
     var new_val = document.getElementById(\"att_val_"+i+"\").value;\
     current_att.name = new_name;\
     current_att.val = new_val;";
-    table+= "<tr><td><input onfocus='"+select_att+"' onkeyup='"+update_att+"' size=20 id='att_name_"+i+"' value='"+tree_selected.atts[i].name + "'></td>"
-    + "<td><textarea onfocus='"+select_att+"' onkeyup='"+update_att+"' id='att_val_"+i+"'>"+tree_selected.atts[i].val+"</textarea></td></tr>";
+    table+= "<tr><td><input onfocus='"+select_att+"' onkeyup='"+update_att+"' size=20 id='att_name_"+i+"' value='"+tree_selected.atts[i].name + "' onblur='update_pane();'></td>"
+    + "<td><textarea onfocus='"+select_att+"' onkeyup='"+update_att+"' id='att_val_"+i+"' onblur='update_pane();'>"+tree_selected.atts[i].val+"</textarea></td></tr>";
   }
   table += "</table>";
   attribute_editor.innerHTML = table;
@@ -81,27 +104,28 @@ function getChildIndex(elt){
     for(var i=0;i<elt.parent.children.length;i++)if(elt.parent.children[i]==elt)return i;
 }
 function addAbove(){
-  if((!element_chosen) || tree_selected == doc)return;
+  if((!element_chosen) || tree_selected == doc || (!tree_selected))return;
   var toAdd = new elt(element_chosen.start_tag,element_chosen.end_tag,element_chosen.display_name);
   tree_selected.parent.addChild(toAdd,getChildIndex(tree_selected));
   update_pane();
 }
 function addBelow(){
-  if((!element_chosen) || tree_selected == doc)return;
+  if((!element_chosen) || tree_selected == doc || (!tree_selected))return;
   var toAdd = new elt(element_chosen.start_tag,element_chosen.end_tag,element_chosen.display_name);
   tree_selected.parent.addChild(toAdd,getChildIndex(tree_selected)+1);
   update_pane();
 }
 function addInside(){
-  if((!element_chosen))return;
-  var toAdd = new elt(element_chosen.start_tag,element_chosen.end_tag,element_chosen.display_name);
-  tree_selected.addChild(toAdd);
+  if((!element_chosen) || (!tree_selected))return;
+  tree_selected.makeChild(""+element_chosen.start_tag,""+element_chosen.end_tag,""+element_chosen.display_name);
   update_pane();
 }
 function update_pane(){
   html_tree_pane.innerHTML = "<table cellspacing='2' cellpadding='0' id='tree_table'>"+ mapOut(doc)+"</table>";
   loadAtts();
-  if(tree_selected)inner_input.value = tree_selected.inner;
+  preview_pane.contentWindow.document.open("text/htmlreplace");
+  preview_pane.contentWindow.document.write(htmlify(doc));
+  preview_pane.contentWindow.document.close();
 }
 function mapOut(root,level){
   level = level || 0;
@@ -112,6 +136,10 @@ function mapOut(root,level){
   var left_click = "var currentElt = getElt("+root.global_id+");\
   tree_selected = currentElt;\
   update_pane();\
+  var childhtml = \"\";\
+  if(!tree_selected.inner)for(var i=0; i<tree_selected.children.length; i++)childhtml += htmlify(tree_selected.children[i]);\
+  else childhtml = tree_selected.inner;\
+  inner_input.value = childhtml;\
   return false;";
   var init_block_style = (
     (root.show_children)?
@@ -142,8 +170,9 @@ function getDepth(root,level,most){
   }
   return most;
 }
-doc_head = doc.makeChild("head","/head");
-doc_body = doc.makeChild("body","/body");
+htdoc = doc.makeChild("html","/html","HTML Document")
+doc_head = htdoc.makeChild("head","/head");
+doc_body = htdoc.makeChild("body","/body");
 head_style = doc_head.makeChild("style","/style");
 body_para1 = doc_body.makeChild("p","/p","paragraph");
 body_div1 = doc_body.makeChild("div","/div");
@@ -155,98 +184,98 @@ div2_h1 = div1_div2.makeChild("h1","/h1");
 elements = [
   {
     display_name : "[FORMAT] Bold",
-    tag_start : "b",
-    tag_end : "/b",
+    start_tag : "b",
+    end_tag : "/b",
     description : "Formats children text bold"
   },
   {
     display_name : "[FORMAT] Italics",
-    tag_start : "i",
-    tag_end : "/i",
+    start_tag : "i",
+    end_tag : "/i",
     description : "Formats children text in italics"
   },
   {
     display_name : "[FORMAT] Underline",
-    tag_start : "u",
-    tag_end : "/u",
+    start_tag : "u",
+    end_tag : "/u",
     description : "Underlines children text"
   },
   {
     display_name : "HTML document",
-    tag_start : "html",
-    tag_end : "/html",
+    start_tag : "html",
+    end_tag : "/html",
     description : "The actual html document element"
   },
   {
     display_name : "Head",
-    tag_start : "head",
-    tag_end : "/head",
+    start_tag : "head",
+    end_tag : "/head",
     description : "The html head tag"
   },
   {
     display_name : "Title",
-    tag_start : "html",
-    tag_end : "/html",
+    start_tag : "title",
+    end_tag : "/title",
     description : "Sets the webpage title"
   },
   {
     display_name : "Body",
-    tag_start : "body",
-    tag_end : "/body",
+    start_tag : "body",
+    end_tag : "/body",
     description : "Element containing the page content"
   },
   {
     display_name : "Paragraph",
-    tag_start : "p",
-    tag_end : "/p",
+    start_tag : "p",
+    end_tag : "/p",
     description : "A paragraph element"
   },
   {
     display_name : "Heading 1",
-    tag_start : "h1",
-    tag_end : "/h1",
+    start_tag : "h1",
+    end_tag : "/h1",
     description : "The biggest heading"
   },
   {
     display_name : "Heading 2",
-    tag_start : "h2",
-    tag_end : "/h2",
+    start_tag : "h2",
+    end_tag : "/h2",
     description : "The second biggest heading"
   },
   {
     display_name : "Heading 3",
-    tag_start : "h3",
-    tag_end : "/h3",
+    start_tag : "h3",
+    end_tag : "/h3",
     description : "The third biggest heading"
   },
   {
     display_name : "Heading 4",
-    tag_start : "h4",
-    tag_end : "/h4",
+    start_tag : "h4",
+    end_tag : "/h4",
     description : "The third smallest heading"
   },
   {
     display_name : "Heading 5",
-    tag_start : "h5",
-    tag_end : "/h5",
+    start_tag : "h5",
+    end_tag : "/h5",
     description : "The second smallest heading"
   },
   {
     display_name : "Heading 6",
-    tag_start : "h6",
-    tag_end : "/h6",
+    start_tag : "h6",
+    end_tag : "/h6",
     description : "The smallest heading"
   },
   {
     display_name : "Image",
-    tag_start : "img",
-    tag_end : "",
+    start_tag : "img",
+    end_tag : "",
     description : "An image element"
   },
   {
     display_name : "Plain Text",
-    tag_start : "",
-    tag_end : "",
+    start_tag : "",
+    end_tag : "",
     description : "Plain text(no tag)"
   }
 ]
@@ -257,9 +286,7 @@ function loadElementChooser(){
     var func = "if(document.getElementsByClassName(\"selected\").length)\
     document.getElementsByClassName(\"selected\")[0].className = \"\";\
     document.getElementById(\"row"+i+"\").className = \"selected\";\
-    element_chosen = {start_tag:\""+elements[i].start_tag+"\",\
-    end_tag:\""+elements[i].end_tag+"\",\
-    display_name:\""+elements[i].display_name+"\"};";
+    element_chosen = {start_tag:\""+elements[i].start_tag+"\", end_tag:\""+elements[i].end_tag+"\",display_name:\""+elements[i].display_name+"\"};";
     var mouseover = "var current = document.getElementById(\"row"+i+"\");\
     current.style.background = \"black\";\
     current.style.color = \"orange\";\
@@ -292,6 +319,11 @@ loadfunc = function(){
   inner_head = document.getElementById("inner-head");
   inner_pane = document.getElementById("inner-pane");
   inner_input = document.getElementById("inner-input");
+  io_menu = document.getElementById("io-menu");
+  io_menu.style.width = window.innerWidth*0.2 -2 + "px";
+  io_menu.style.height = window.innerHeight*0.5 - 2 + "px";
+  io_menu.style.top = window.innerHeight*0.5 + 1 + "px";
+  io_menu.style.left = "0px";
   element_head.style.width = window.innerWidth*0.25 - 2 + "px";
   element_head.style.height = window.innerHeight*0.05 - 2 + "px";
   element_head.style.left = window.innerWidth*0.45 + 1 + "px";
@@ -321,19 +353,19 @@ loadfunc = function(){
   attribute_head.style.width = window.innerWidth*0.3 - 2 + "px";
   attribute_head.style.top = window.innerHeight*0.5 + 1 + "px";
   attribute_head.style.left = window.innerWidth*0.7 + 1 + "px";
-  inner_head.style.width = window.innerWidth*0.3 - 2 + "px";
+  inner_head.style.width = window.innerWidth*0.5 - 2 + "px";
   inner_head.style.height = window.innerHeight*0.05 - 2 + "px";
-  inner_head.style.left = window.innerWidth*0.4 + 1 + "px";
+  inner_head.style.left = window.innerWidth*0.2 + 1 + "px";
   inner_head.style.top = window.innerHeight*0.5 + 1 + "px";
-  inner_pane.style.width = window.innerWidth*0.3 - 2 + "px";
+  inner_pane.style.width = window.innerWidth*0.5 - 2 + "px";
   inner_pane.style.height = window.innerHeight*0.45 - 2 + "px";
-  inner_pane.style.left = window.innerWidth*0.4 + 1 + "px";
+  inner_pane.style.left = window.innerWidth*0.2 + 1 + "px";
   inner_pane.style.top = window.innerHeight*0.55 + 1 + "px";
   loadElementChooser();
   window.onkeyup = function(e){
     e = e || event;
     if(e.keyCode == 46){
-      if(!(tree_selected == doc))tree_selected.remove();update_pane();
+      if(!(tree_selected == doc) && tree_selected){tree_selected.remove();tree_selected=null;update_pane();}
     }
   }
   inner_input.onkeyup = function(){

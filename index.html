@@ -20,7 +20,7 @@
       <div id="adddown" class="treebutton" onclick="addBelow();return false;">
         []<sub><span>+</span></sub>
       </div>
-      <div id="delete" class="treebutton" onclick="if(!(tree_selected == doc))tree_selected.remove();update_pane();">
+      <div id="delete" class="treebutton" onclick="if(!(tree_selected == doc)){tree_selected.remove();inner_input.value = '';}tree_selected=null;update_pane();">
         <span style="color:red;cursor:pointer;font-size:3vh;">
           -
         </span>
@@ -38,5 +38,11 @@
     <div id="element-chooser"></div>
     <div id="inner-head">Inner HTML Editor</div>
     <div id="inner-pane"><textarea id="inner-input"></textarea></div>
+    <div id="io-menu">
+      <table>
+        <tr><td id="page_loader">Load Webpage</td></tr>
+        <tr><td id="page_saver">Save Webpage</td></tr>
+      </table>
+    </div>
   </body>
 </html>
