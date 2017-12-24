@@ -3,6 +3,151 @@ tree_selected = null;
 element_chosen = null;
 tab_spaces = 2;
 doc = new elt("","","document");
+function codify(str){
+  var container = new elt("","","Container");
+  var c = 0;
+  var getting_start = false;
+  var current_start = "";
+  var getting_att = false;
+  var current_att_name = "";
+  var current_att_value = "";
+  var getting_end = false;
+  var current_end = "";
+  var getting_plain = false;
+  var current_plain = "";
+  var current_container = container;
+  while(c < str.length){
+    var ch = str[c];
+    if(ch == "<"){
+      if(str[c+1] == "/"){
+        getting_end = true;
+        c++;
+        ch = str[c];
+        while(ch != ">"){
+          current_end += ch;
+          c++;
+          ch = str[c];
+        }
+        while(current_end != current_container.start_tag)if(current_container.parent)current_container = current_container.parent;
+        current_container.end_tag = current_end;
+        current_end = "";
+        getting_end = false;
+
+      }
+      if(getting_plain){
+        var plain = current_container.makeChild("","","Plain Text");
+        plain.inner = current_plain;
+        current_plain = "";
+        getting_plain = false;
+      }
+      else getting_start = true;
+      c++;
+      continue;
+    }
+    if(getting_start){
+      if("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".includes(ch))
+        current_start += ch;
+      else{
+        current_container = current_container.makeChild(current_start,"");
+        current_start = "";
+        getting_start = false;
+        if(ch != ">")getting_att = true;
+        c++;
+        continue;
+      }
+      if(getting_att){
+        if(current_att_name == "" && ch == " "){
+          c++;
+          continue;
+        }
+        if(curren_att_name == "" && "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".includes(ch)){
+          getting_att_name = true;
+          current_att_name += ch;
+          c++;
+          continue;
+        }
+        if(getting_att_name){
+          if("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".includes(ch)){
+            current_att_name += ch;
+            c++;
+            continue;
+          }
+          else{
+            if(ch == "="){
+              getting_att_name = false;
+              getting_att_value = true;
+              c++;
+              continue;
+            }
+            else if(ch == " "){
+              current_container.attEdit(current_att_name,"");
+              current_att_name = "";
+              getting_att_name = false;
+              c++;
+              continue;
+            }
+            else if(ch == ">"){
+              current_container.attEdit(current_att_name,"");
+              current_att_name = "";
+              getting_att_name = false;
+              getting_att = false;
+              c++;
+              continue;
+            }
+          }
+        }
+        if(getting_att_value){
+          if(ch == "'" || ch == '"'){
+            current_att_value += ch;
+            var closer = ch;
+            c++;
+            ch = str[c];
+            while(ch != closer){
+              current_att_value += ch;
+              c++;
+              ch = str[c];
+            }
+            current_att_value += closer;
+            current_container.attEdit(current_att_name,current_att_value);
+            getting_att_value = false;
+            current_att_value = "";
+            current_att_name = "";
+            c++;
+            continue;
+          }
+          if(ch == " "){
+            current_container.attEdit(current_att_name,current_att_value);
+            getting_att_value = false;
+            current_att_value = "";
+            current_att_name = "";
+            c++;
+            continue;
+          }
+          if(ch == ">"){
+            current_container.attEdit(current_att_name,current_att_value);
+            getting_att_value = false;
+            current_att_value = "";
+            current_att_name = "";
+            getting_att = false;
+            c++;
+            continue;
+          }
+          if("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".includes(ch)){
+            current_att_value += ch;
+            c++;
+            continue;
+          }
+        }
+      }
+    }
+    else if(!getting_end){
+    getting_plain = true;
+    current_plain += ch;
+    }
+    c++;
+  }
+  return container;
+};
 function htmlify(root,tabdepth){
   tabdepth = tabdepth || 0;
   var str = "";
@@ -20,7 +165,7 @@ function htmlify(root,tabdepth){
   }
   else
     for(var i=0; i<root.children.length; i++)str += htmlify(root.children[i],tabdepth+1);
-  if(root.end_tag)str += "<" + root.end_tag + ">";
+  if(root.end_tag)str += stringrep(stringrep(" ",tabdepth),tab_spaces) + "<" + root.end_tag + ">";
   str += "\n";
   return str;
 }
