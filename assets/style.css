@@ -98,9 +98,10 @@ display: none;
   background:black;
   border:1px solid black;
   position:absolute;
+  overflow-y:auto;
 }
 #attribute-editor td{
-  height:4vh;
+  height:5vh;
   border:0.1px solid grey;
 }
 #attribute-editor input{
@@ -122,6 +123,27 @@ display: none;
   border:1px solid black;
   text-align: center;
   font-size:4vh;
+}
+#inner-head{
+  background:rgba(0,0,0,0.5);
+  position:absolute;
+  border:1px solid black;
+  text-align: center;
+  font-size:4vh;
+}
+#inner-pane {
+  background:black;
+  border:1px solid black;
+  border-right:none;
+  position:absolute;
+  overflow:hidden;
+}
+#inner-pane textarea{
+  background:black;
+  height:inherit;
+  width:inherit;
+  border:1px solid teal;
+  color:green;
 }
 #att-add{
   color:teal;

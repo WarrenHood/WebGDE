@@ -30,11 +30,13 @@
     </div>
     <div id="attribute-head">Attribute Editor
       <div id="att-rem" onclick="if((last_att === 0 || last_att) && tree_selected)tree_selected.removeAtt(last_att);last_att=null;update_pane();">-</div>
-      <div id="att-add" onclick="if(tree_selected)tree_selected.attEdit('','');update_pane();">+</div>
+      <div id="att-add" onclick="if(tree_selected){tree_selected.attEdit('','');update_pane();document.getElementById('att_name_'+(tree_selected.atts.length-1)).focus();}">+</div>
     </div>
     <div id="attribute-editor"></div>
     <div id="element-head">Element Chooser</div>
     <input id="element-search" value="Search for elements..." onblur="javascript: document.getElementById('element-search').value = 'Search for elements...';" onfocus="javascript: document.getElementById('element-search').value = '';"></input>
     <div id="element-chooser"></div>
+    <div id="inner-head">Inner HTML Editor</div>
+    <div id="inner-pane"><textarea id="inner-input"></textarea></div>
   </body>
 </html>

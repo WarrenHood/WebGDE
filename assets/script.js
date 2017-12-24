@@ -101,6 +101,7 @@ function addInside(){
 function update_pane(){
   html_tree_pane.innerHTML = "<table cellspacing='2' cellpadding='0' id='tree_table'>"+ mapOut(doc)+"</table>";
   loadAtts();
+  if(tree_selected)inner_input.value = tree_selected.inner;
 }
 function mapOut(root,level){
   level = level || 0;
@@ -241,6 +242,12 @@ elements = [
     tag_start : "img",
     tag_end : "",
     description : "An image element"
+  },
+  {
+    display_name : "Plain Text",
+    tag_start : "",
+    tag_end : "",
+    description : "Plain text(no tag)"
   }
 ]
 function loadElementChooser(){
@@ -282,6 +289,9 @@ loadfunc = function(){
   element_pane = document.getElementById("element-chooser");
   element_search = document.getElementById("element-search");
   element_head = document.getElementById("element-head");
+  inner_head = document.getElementById("inner-head");
+  inner_pane = document.getElementById("inner-pane");
+  inner_input = document.getElementById("inner-input");
   element_head.style.width = window.innerWidth*0.25 - 2 + "px";
   element_head.style.height = window.innerHeight*0.05 - 2 + "px";
   element_head.style.left = window.innerWidth*0.45 + 1 + "px";
@@ -311,12 +321,25 @@ loadfunc = function(){
   attribute_head.style.width = window.innerWidth*0.3 - 2 + "px";
   attribute_head.style.top = window.innerHeight*0.5 + 1 + "px";
   attribute_head.style.left = window.innerWidth*0.7 + 1 + "px";
+  inner_head.style.width = window.innerWidth*0.3 - 2 + "px";
+  inner_head.style.height = window.innerHeight*0.05 - 2 + "px";
+  inner_head.style.left = window.innerWidth*0.4 + 1 + "px";
+  inner_head.style.top = window.innerHeight*0.5 + 1 + "px";
+  inner_pane.style.width = window.innerWidth*0.3 - 2 + "px";
+  inner_pane.style.height = window.innerHeight*0.45 - 2 + "px";
+  inner_pane.style.left = window.innerWidth*0.4 + 1 + "px";
+  inner_pane.style.top = window.innerHeight*0.55 + 1 + "px";
   loadElementChooser();
   window.onkeyup = function(e){
     e = e || event;
     if(e.keyCode == 46){
       if(!(tree_selected == doc))tree_selected.remove();update_pane();
     }
+  }
+  inner_input.onkeyup = function(){
+    if(!tree_selected)return;
+    tree_selected.inner = inner_input.value;
+    update_pane();
   }
   update_pane();
 }
