@@ -11,13 +11,13 @@
     </iframe>
     <div id="html-tree-head">
       Tree Editor
-      <div id="addup" class="treebutton" onclick="addAbove();return false;">
+      <div id="addup" class="treebutton">
         []<sup><span>+</span></sup>
       </div>
-      <div id="addin" class="treebutton" onclick="addInside();return false;">
+      <div id="addin" class="treebutton">
         [<span>+</span>]
       </div>
-      <div id="adddown" class="treebutton" onclick="addBelow();return false;">
+      <div id="adddown" class="treebutton"
         []<sub><span>+</span></sub>
       </div>
       <div id="delete" class="treebutton" onclick="if(!(tree_selected == doc)){tree_selected.remove();inner_input.value = '';}tree_selected=null;update_pane();">

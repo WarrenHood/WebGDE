@@ -4,6 +4,18 @@ element_chosen = null;
 tab_spaces = 2;
 constant_layout_update = true;
 doc = new elt("","","document");
+quick_load = false;
+keep_newlines = false;
+function loadHTML(str){
+  global_elts = [];
+  tree_selected = null;
+  element_chosen = null;
+  tab_spaces = 2;
+  constant_layout_update = true;
+  doc = new elt("","","document");
+  doc.children = codify(str);
+  update_pane();
+}
 /*
 function codify(str){
   var container = new elt("","","Container");
@@ -248,30 +260,104 @@ function has_closing_tag(start_name,array,start){
   }
   return false;
 }
+function filter(str){
+  var new_string = "";
+  var start = 0;
+  while(start < str.length && str[start] == " "){ //While the char is a space
+      start++; //Move to next char
+  }
+  //We have stripped all leading spaces
+  var end = str.length - 1;
+  while(end >= 0 && str[end] == " "){ //While the char is a space
+    end--;
+  }
+  //We have stripped trailing spaces.
+  for(var i=start; i <= end; i++)new_string += str[i];
+  return new_string;
+}
 function split_string(str){
   var list = [];
   var c = 0;
   var current = "";
   var last = "";
   var in_string = false;
-  while(c < str.length){ //For each character in the string
+  var start_quote = "";
+  while(c < str.length){//For each character in the string
+    if(!in_string){//If we aren't in a string
+        if(str[c] == "\n" && !keep_newlines){
+          c++;
+          continue;
+        }
+    }
     if((!in_string) && (str[c] == "<" || str[c] == ">")){ //If we are at the start or end of a tag
       if(str[c] == ">"){ //If we are at the end
         current += str[c]; //Finish the tag off
-        list.push(current); //Push current to the list
+        current = filter(current);
+        if(current)list.push(current); //Push current to the list
         current = ""; //Reset current value
         c++; //Move to next character
         continue;
       }
       else { //Else we are at the beginning of a tag
-        list.push(current); //Push current to the list
+        current = filter(current);
+        if(current)list.push(current); //Push current to the list
         current = ""; //Reset current value
         current += str[c]; //Add beginning of start tag to current
         c++; //Move to the next character
+        continue;
       }
     }
+    else{ //Else we are inside some tag or in the innerHTML
+      current += str[c]; //Add the char to current;
+      if(!in_string){ //If we weren't in a string
+        if("'\"".includes(str[c])){ //If we just wrote a quote
+            in_string = true; //Then we are now in a string
+            start_quote = str[c]; //Store the starting quote
+        }
+      }
+      else{ //Else if we were already in a string
+          if(str[c] == start_quote && last != '\\'){ //And we wrote the starting quote
+            in_string = false; //Then we aren't in a string anymore
+            start_quote = ""; //Reset the starting quote
+          }
+      }
+    }
+    last = str[c]; //Set the last character
     c++; //Go to next character
   }
+  current = filter(current);
+  if(current)list.push(current);
+  return list;
+}
+function codify(str){
+  var list = split_string(str); //Split all of the elements into a list
+  var container = new elt("",""); //Create a container
+  var current_container = container; //Use container as current one
+  for(var i=0; i<list.length; i++){ //For each index in our list
+    if(identify_tag_type(list[i]) == "start"){ //If it is a starting tag
+      current_container = current_container.addChild(make_from_start(list[i]));
+      //We have now got the new element as the current container
+      if(!has_closing_tag(current_container.start_tag,list,i+1)){ //If we don't have a closing tag
+        current_container = current_container.parent; //Then current_container is set back to its parent
+      }
+    }
+    else if(identify_tag_type(list[i]) == "end"){ //Otherwise if we are closing a tag
+      if(identify_start_from_end(list[i]) != current_container.start_tag){ //If start tag doesn't match end tag
+        alert("Something is wrong with a closing tag in your code... I will try fixing it though... If invalid data is imported please try to fix your html and try again.");
+        current_container.end_tag = "/"+current_container.start_tag;
+        current_container = current_container.parent; //Use parent as current container
+      }
+      else{ //Otherwise start matched end tag
+        current_container.end_tag = "/"+identify_start_from_end(list[i]);
+        current_container = current_container.parent; //Use parent as current container
+      }
+    }
+    else{ //Otherwise it is plain text
+      var plain_holder = current_container.makeChild("","","Plain Text"); //Make a container for it
+      plain_holder.inner = list[i]; //Set the innerHTML of the plain to be current
+    }
+  }
+  return container.children;
 }
 function htmlify(root,tabdepth){
   tabdepth = tabdepth || 0;
@@ -396,6 +482,11 @@ function update_pane(){
   preview_pane.contentWindow.document.open("text/htmlreplace");
   preview_pane.contentWindow.document.write(htmlify(doc));
   preview_pane.contentWindow.document.close();
+  if(!tree_selected)return;
+  var childhtml = "";
+  if(!tree_selected.inner)for(var i=0; i<tree_selected.children.length; i++)childhtml += htmlify(tree_selected.children[i]);
+  else childhtml = tree_selected.inner;
+  inner_input.value = childhtml;
 }
 function mapOut(root,level){
   level = level || 0;
@@ -638,12 +729,71 @@ loadfunc = function(){
       if(!(tree_selected == doc) && tree_selected){tree_selected.remove();tree_selected=null;update_pane();}
     }
   }
-  inner_input.onkeyup = function(){
-    if(!tree_selected)return;
-    tree_selected.inner = inner_input.value;
+  inner_input.onblur = function(){
+    if(!tree_selected){
+      console.log("No tree selected");
+      return;}
+    if(quick_load){
+    if(tree_selected.start_tag)tree_selected.children = codify(inner_input.value);
+    else tree_selected.inner = inner_input.value;
     update_pane();
+    }
+    else{
+    tree_selected.inner = inner_input.value;
+    loadHTML(htmlify(doc));
+    inner_input.value = "";
+    }
   }
   update_pane();
+  document.getElementById("addup").onclick = function(e){
+    e = e || event;
+    if(e.ctrlKey){
+      var user_tag = prompt("Enter a tag name to add");
+      var end_tag = "";
+      if(confirm("Click ok if it has an end tag. Otherwise click cancel"))end_tag = "/"+user_tag;
+      element_chosen = {start_tag:user_tag,end_tag:end_tag,display_name:user_tag};
+    }
+    addAbove();
+    return false;
+  }
+  document.getElementById("addin").onclick = function(e){
+    e = e || event;
+    if(e.ctrlKey){
+      var user_tag = prompt("Enter a tag name to add");
+      var end_tag = "";
+      if(confirm("Click ok if it has an end tag. Otherwise click cancel"))end_tag = "/"+user_tag;
+      element_chosen = {start_tag:user_tag,end_tag:end_tag,display_name:user_tag};
+    }
+    addInside();
+    return false;
+  }
+  document.getElementById("adddown").onclick = function(e){
+    e = e || event;
+    if(e.ctrlKey){
+      var user_tag = prompt("Enter a tag name to add");
+      var end_tag = "";
+      if(confirm("Click ok if it has an end tag. Otherwise click cancel"))end_tag = "/"+user_tag;
+      element_chosen = {start_tag:user_tag,end_tag:end_tag,display_name:user_tag};
+    }
+    addBelow();
+    return false;
+  }
+  document.getElementById("page_loader").onclick = function(){
+    if(!confirm("Any progress made so far will be lost.\nContinue?"))return;
+    tree_selected = doc;
+    tree_selected.inner = "";
+    tree_selected.children = [];
+    tree_selected = doc;
+    update_pane();
+    alert("Please paste your html into the pane: \"Inner HTML Editor\" to the right hand side. Then click anywhere else");
+    //inner_input.focus();
+  }
+  document.getElementById("page_saver").onclick = function(){
+    tree_selected = doc;
+    update_pane();
+    alert("Copy and paste the html from the pane: \"Inner HTML Editor\" to the right into a blank .html file and save it");
+    //inner_input.focus();
+  }
 }
 window.onload = loadfunc;
 if(constant_layout_update)setInterval(function(){
