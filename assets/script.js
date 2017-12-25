@@ -3,7 +3,7 @@ tree_selected = null;
 element_chosen = null;
 tab_spaces = 2;
 constant_layout_update = true;
-doc = new elt("","","document");
+doc = new elt("","","File");
 quick_load = false;
 keep_newlines = false;
 function loadHTML(str){
@@ -407,7 +407,7 @@ function getElt(global_id){
 }
 function elt(start_tag,end_tag,display_name){
   this.global_id = global_elts.length;
-  this.display_name = display_name || start_tag;
+  this.display_name = display_name || find_display_name(start_tag);
   this.start_tag = start_tag;
   this.end_tag = end_tag;
   this.inner = "";
@@ -532,16 +532,15 @@ function getDepth(root,level,most){
   return most;
 }
 htdoc = doc.makeChild("html","/html","HTML Document")
-doc_head = htdoc.makeChild("head","/head");
-doc_body = htdoc.makeChild("body","/body");
-head_style = doc_head.makeChild("style","/style");
-body_para1 = doc_body.makeChild("p","/p","paragraph");
-body_div1 = doc_body.makeChild("div","/div");
-div1_span1 = body_div1.makeChild("span","/span");
-div1_div2 = body_div1.makeChild("div","/div");
-div2_p1 = div1_div2.makeChild("p","/p");
-div2_h1 = div1_div2.makeChild("h1","/h1");
-
+doc_head = htdoc.makeChild("head","/head","Head");
+doc_body = htdoc.makeChild("body","/body","Body");
+head_style = doc_head.makeChild("style","/style","Style");
+function find_display_name(start_tag){
+  for(var i=0; i<elements.length; i++){
+    if(elements[i].start_tag == start_tag)return elements[i].display_name;
+  }
+  return start_tag;
+}
 elements = [
   {
     display_name : "[FORMAT] Bold",
@@ -578,6 +577,12 @@ elements = [
     start_tag : "title",
     end_tag : "/title",
     description : "Sets the webpage title"
+  },
+  {
+    display_name : "Style",
+    start_tag : "style",
+    end_tag : "/style",
+    description : "An embedded CSS stylesheet"
   },
   {
     display_name : "Body",
