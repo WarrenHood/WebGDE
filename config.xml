@@ -21,4 +21,5 @@
   <preference name="fullscreen" value="true" />
   <preference name='uiwebviewbounce' value='false' />
   <icon src='icon.png' height='50' width='50'/>
+  <plugin name="cordova-plugin-file" source="npm"/>
 </widget>
