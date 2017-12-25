@@ -784,20 +784,20 @@ loadfunc = function(){
     return false;
   }
   document.getElementById("page_loader").onclick = function(){
-    if(!confirm("Any progress made so far will be lost.\nContinue?"))return;
-    tree_selected = doc;
-    tree_selected.inner = "";
-    tree_selected.children = [];
-    tree_selected = doc;
-    update_pane();
-    alert("Please paste your html into the pane: \"Inner HTML Editor\" to the right hand side. Then click anywhere else");
-    //inner_input.focus();
+    document.getElementById("fileselect").click();
   }
   document.getElementById("page_saver").onclick = function(){
-    tree_selected = doc;
-    update_pane();
-    alert("Copy and paste the html from the pane: \"Inner HTML Editor\" to the right into a blank .html file and save it");
-    //inner_input.focus();
+    var fname = prompt("Download as? (.html added automatically)");
+    if(!fname)return;
+    download(fname+".html",htmlify(doc));
+  }
+  document.getElementById("fileselect").onchange = function(e){
+    var file = document.getElementById("fileselect").files[0];
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      loadHTML(reader.result);
+    };
+    reader.readAsText(file);
   }
 }
 window.onload = loadfunc;
@@ -805,3 +805,15 @@ if(constant_layout_update)setInterval(function(){
   if(window.innerWidth != last_width || window.innerHeight != last_height)
     loadfunc();
 },1000);
+function download(filename, text) {
+  var element = document.createElement('a');
+  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+  element.setAttribute('download', filename);
+
+  element.style.display = 'none';
+  document.body.appendChild(element);
+
+  element.click();
+
+  document.body.removeChild(element);
+}
