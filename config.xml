@@ -22,5 +22,5 @@
   <preference name='uiwebviewbounce' value='false' />
   <icon src='icon.png' height='50' width='50'/>
   <plugin name="cordova-plugin-file" source="npm"/>
-  
+  <plugin spec="https://github.com/apache/cordova-plugin-file-transfer"/>
 </widget>
