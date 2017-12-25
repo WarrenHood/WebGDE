@@ -802,9 +802,9 @@ loadfunc = function(){
     document.getElementById("fileselect").click();
   }
   document.getElementById("page_saver").onclick = function(){
-    var fname = prompt("Download as? (.html added automatically)");
-    if(!fname)return;
-    download(fname+".html",htmlify(doc));
+    alert("Copy the html on your right into a blank .html document");
+    tree_selected = doc;
+    update_pane();
   }
   document.getElementById("fileselect").onchange = function(e){
     var file = document.getElementById("fileselect").files[0];
