@@ -2,6 +2,8 @@ html, body {
   background:rgba(0,0,0,0.8);
   color:white;
   overflow:hidden;
+  height:100%;
+  width:100%;
 }
 #tree_table{
   z-index:0;
