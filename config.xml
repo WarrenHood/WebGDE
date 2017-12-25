@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+    <widget xmlns   = ""
+        xmlns:gap   = ""
+        id          = "com.warren.WebGDE"
+        versionCode = "101"
+        version     = "1.0.1" >
+
+    <!-- versionCode is optional and Android only -->
+
+    <name>WebGDE</name>
+
+    <description>
+        A cross-platform graphical webpage design enviroment written in HTML5.
+    </description>
+
+    <author href="www.facebook.com/warren.hood.750" email="nullbyte001@gmail.com">
+        Warren Hood
+    </author>
+	<preference name="DisallowOverscroll" value="true" />
+ <preference name="orientation" value="landscape" />
+  <preference name="fullscreen" value="true" />
+  <preference name='uiwebviewbounce' value='false' />
+  <icon src='icon.png' height='50' width='50'/>
+</widget>
