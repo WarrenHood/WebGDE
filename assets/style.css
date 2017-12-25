@@ -66,32 +66,53 @@ display: none;
 .treebutton {
   position:absolute;
   text-align:center;
-  color:blue;
-  font-size:2vh;
+  color:teal;
+  font-size:4vh;
+  width:fit-content;
 }
-.treebutton :hover {
+#toggler{
+  position:absolute;
+  text-align:center;
+  cursor:pointer;
+  font-size:2.5vh;
+  width:fit-content;
+  left: 0px;
+  top:0px;
+}
+.on{
+  color:green;
+}
+.off{
+  color:red;
+}
+.treebutton:hover {
   color:white;
+  background:teal;
   cursor:pointer;
 }
-.treebutton span {
-  color:green;
-  font-size:2.5vh;
-}
 #addup {
-  right:1vh;
-  top:0.6vh;
+  right:0px;
+  top:0px;
 }
 #adddown {
-  right:5vh;
-  top:1.5vh;
+  right:5.5vh;
+  top:0px;
 }
 #addin {
-  right:9vh;
-  top:1vh;
+  right:11vh;
+  top:0px;
 }
 #delete {
-  top: 1vh;
-  left: 1vh;
+  color:red;
+  cursor:pointer;
+  font-size:4vh;
+  position:absolute;
+  left:0px;
+  top:0px;
+}
+#delete:hover{
+  background:red;
+  color:white;
 }
 #attribute-editor {
   background:black;
@@ -157,6 +178,7 @@ display: none;
 }
 #att-add:hover {
   color:white;
+  background:teal;
 }
 #io-menu table {
   width:inherit;
@@ -182,6 +204,10 @@ display: none;
   position:absolute;
   left:0px;
   top:0px;
+}
+#att-rem:hover{
+  color:white;
+  background:red;
 }
 #att-add:hover {
   color:white;

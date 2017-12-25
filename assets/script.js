@@ -645,6 +645,19 @@ elements = [
     description : "Plain text(no tag)"
   }
 ]
+function search_elt(){
+  var keys = element_search.value.toLowerCase().split(" ");
+  for(var i=0; i < elements.length; i++){
+    document.getElementById("row"+i).hidden = false;
+    for(var j=0; j< keys.length; j++){
+      if(!(elements[i].start_tag.toLowerCase().includes(keys[j]) || elements[i].end_tag.toLowerCase().includes(keys[j]) || elements[i].description.toLowerCase().includes(keys[j]) || elements[i].display_name.toLowerCase().includes(keys[j]))){
+        document.getElementById("row"+i).hidden = true;
+        continue;
+      }
+      //else alert("It's fine with key: "+keys[i]);
+    }
+  }
+}
 function loadElementChooser(){
   var htm = "<table style='border-collapse:collapse;width:"+(window.innerWidth*0.25-2)+"px;'>";
   htm += "<tr style='color:red;'><td>Element</td><td overflow:scroll;>Description</td></tr>";
@@ -774,7 +787,8 @@ loadfunc = function(){
   }
   document.getElementById("adddown").onclick = function(e){
     e = e || event;
-    if(e.ctrlKey){
+    if(!tree_selected)return;
+    if(e.ctrlKey || toggler.className == "on"){
       var user_tag = prompt("Enter a tag name to add");
       var end_tag = "";
       if(confirm("Click ok if it has an end tag. Otherwise click cancel"))end_tag = "/"+user_tag;
@@ -798,6 +812,11 @@ loadfunc = function(){
       loadHTML(reader.result);
     };
     reader.readAsText(file);
+  }
+  toggler = document.getElementById("toggler");
+  toggler.onclick = function(e){
+    if(toggler.className == "on")toggler.className = "off";
+    else toggler.className = "on";
   }
 }
 window.onload = loadfunc;
