@@ -1,4 +1,5 @@
 global_elts = [];
+downloadManager = require('cordova-plugin-android-downloadmanager.DownloadManager');
 tree_selected = null;
 element_chosen = null;
 tab_spaces = 2;
