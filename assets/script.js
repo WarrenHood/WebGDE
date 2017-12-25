@@ -2,7 +2,9 @@ global_elts = [];
 tree_selected = null;
 element_chosen = null;
 tab_spaces = 2;
+constant_layout_update = true;
 doc = new elt("","","document");
+/*
 function codify(str){
   var container = new elt("","","Container");
   var c = 0;
@@ -148,6 +150,129 @@ function codify(str){
   }
   return container;
 };
+*/
+function make_from_start(str){
+  //str is in form '<name space *spaces *(att *(*spaces = *spaces *val))) *spaces >' where *=optional
+  var i = 1;
+  var start_tag = "";
+  while(str[i] != " " && str[i] != ">"){
+    start_tag += str[i];
+    i++;
+  }
+  var element = new elt(start_tag,""); //Create and element with start tag name
+  var current_att = ""; //Set the current attribute name to nothing
+  var getting_att = true; //Start retrieving attribute name
+  var getting_val = false; //Do not retrieve attribute value yet
+  var current_val = ""; // Set the current attribute value to nothing
+  while(i < str.length-1){
+    if(current_att == "" && str[i] == " "){ //If the current att is empty and current char is a space
+      i++; //Go to the next character
+      continue;
+    }
+    if(getting_att){ //If we are busy retrieving the attribute name
+      if(str[i] != " " && str[i] != "="){ // Then while character isn't a space or = sign
+        current_att += str[i]; //Add the character to the attribute name
+        i++; //Move on to the next character
+        continue;
+      }
+      else{ //We have just finished getting the attribute name
+        getting_att = false; //Stop retrieving the attribute name
+        while(str[i] == " ")i++; //Strip spaces until we reach an = or another attribute
+        if(str[i] == "="){// If the attribute has a value
+          getting_val = true; //Start getting value
+          i++; //Move to next character
+          while(str[i] == " ")i++;  //strip leading spaces
+        }
+        else{
+          //Otherwise add attribute without value now
+          element.attEdit(current_val,""); //Added attribute
+          current_att = ""; //Reset current attribute new_name
+          getting_att = true; // Obviously we must start getting the next attribute name
+        }
+      }
+    }
+  else if(getting_val){ // Otherwise we have a name and we are looking for its value
+    //We will now get the entire value in a loop
+    //We ended on the start of the value, spaces already stripped
+    var last_char = ''; //Initialize a last_char
+    if(str[i] == "'" || str[i] == '"'){ //If value is in quotes
+      var starting_quote = str[i]; //Store the starting quote
+      current_val = starting_quote; //Set current value to quote
+      i++; //Move to the next character
+      while(str[i] != starting_quote || last_char == "\\"){ //While char isn't ending quote
+        current_val += str[i]; //Add it to the current Value
+        last_char = str[i]; //Store the last char
+        i++; //Move to the next character
+      }
+      //Char is now the ending quote, let's add it
+      current_val += str[i]; //Added ending quote
+      i++; //Move to the next character
+    }
+    else { //Else if the value is not in quotes
+      while(str[i] != " " && i < str.length-1){ //While the value isn't a space and we havent finished the string
+          current_val += str[i]; //Add the character to the current value
+          i++; //Move to the next character
+      }
+      //Now the value is either a space or we are done
+    }
+    //And by now we have got a name,value pair for the attribute.
+    element.attEdit(current_att,current_val); //Add our name,value pair to element
+    current_att = ""; //Reset current_att for next time
+    current_val = ""; //Reset current_val for next time
+    getting_val = false; //Stop getting attribute Value
+    getting_att = true; //Start getting the next attribute(if there is one)
+    }
+  }
+  return element;
+}
+function identify_start_from_end(str){
+  var filtered = "";
+  for(var i=0; i<str.length; i++){
+    if("</ >".includes(str[i]))continue;
+    filtered += str[i];
+  }
+  return filtered;
+}
+function identify_tag_type(str){
+  if(str[0] != "<")return "plain";
+  var i = 1;
+  while(i < str.length && str[i] == " ")i++;
+  if(str[i] == "/")return "end";
+  return "start";
+}
+function has_closing_tag(start_name,array,start){
+  start = start || 0;
+  for(var i=start; i<array.length; i++){
+    if(identify_tag_type(array[i]) != "end")continue;
+    if(identify_start_from_end(array[i]) == start_name)return true;
+  }
+  return false;
+}
+function split_string(str){
+  var list = [];
+  var c = 0;
+  var current = "";
+  var last = "";
+  var in_string = false;
+  while(c < str.length){ //For each character in the string
+    if((!in_string) && (str[c] == "<" || str[c] == ">")){ //If we are at the start or end of a tag
+      if(str[c] == ">"){ //If we are at the end
+        current += str[c]; //Finish the tag off
+        list.push(current); //Push current to the list
+        current = ""; //Reset current value
+        c++; //Move to next character
+        continue;
+      }
+      else { //Else we are at the beginning of a tag
+        list.push(current); //Push current to the list
+        current = ""; //Reset current value
+        current += str[c]; //Add beginning of start tag to current
+        c++; //Move to the next character
+      }
+    }
+    c++; //Go to next character
+  }
+}
 function htmlify(root,tabdepth){
   tabdepth = tabdepth || 0;
   var str = "";
@@ -521,7 +646,7 @@ loadfunc = function(){
   update_pane();
 }
 window.onload = loadfunc;
-setInterval(function(){
+if(constant_layout_update)setInterval(function(){
   if(window.innerWidth != last_width || window.innerHeight != last_height)
     loadfunc();
 },1000);

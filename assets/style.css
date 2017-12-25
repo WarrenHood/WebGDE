@@ -108,13 +108,15 @@ display: none;
   color:teal;
   height:inherit;
   border:none;
+  overflow-x:auto;
 }
 #attribute-editor textarea{
   height:inherit;
-  overflow-y:auto;
+  overflow-x:auto;
   color:red;
   background:rgba(0,0,0,0);
   border:none;
+  white-space:nowrap;
 }
 #attribute-head{
   background:rgba(0,0,0,0.5);
@@ -143,6 +145,7 @@ display: none;
   width:inherit;
   border:1px solid teal;
   color:green;
+  overflow:auto;
 }
 #att-add{
   color:teal;
