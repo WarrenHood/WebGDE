@@ -1,18 +1,18 @@
 global_elts = [];
 tree_selected = null;
 element_chosen = null;
-tab_spaces = 2;
+tab_spaces = 1;
 constant_layout_update = true;
 doc = new elt("","","File");
-quick_load = true;
+quick_load = true; //Quick load broken
 keep_newlines = false;
 function loadHTML(str){
   global_elts = [];
   tree_selected = null;
   element_chosen = null;
-  tab_spaces = 2;
+  tab_spaces = 1;
   constant_layout_update = true;
-  doc = new elt("","","document");
+  doc = new elt("","","File");
   doc.children = codify(str);
   update_pane();
 }
@@ -425,8 +425,8 @@ function loadAtts(){
   table += "</table>";
   attribute_editor.innerHTML = table;
 }
-function getElt(global_id){
-  return global_elts[global_id];
+function getElt(gl_id){
+  for(var i=0; i< global_elts.length; i++)if(global_elts[i].global_id == gl_id)return global_elts[i];
 }
 function elt(start_tag,end_tag,display_name){
   this.global_id = global_elts.length;
@@ -456,6 +456,41 @@ function elt(start_tag,end_tag,display_name){
     if(this.parent)for(var j=0; j<this.parent.children.length;j++){
       if(this.parent.children[j] == this){
         this.parent.children.splice(j,1);
+        break;
+      };
+    };
+  };
+  this.replace = function(others){
+    if(this.parent)for(var j=0; j<this.parent.children.length;j++){
+      if(this.parent.children[j] == this){
+        console.log("Replacing from here...");
+        console.log(this.parent);
+        var orig_parent = this.parent;
+        orig_parent.children.splice(j,1);
+        console.log("Just spliced from position "+j);
+        console.log(orig_parent);
+        var newkids = [];
+        for(var k=0;k<orig_parent.children.length;k++){
+          if(k == j){
+            for(var l=0; l < others.length; l++){
+              newkids.push(others[l]);
+              console.log("Added to newkids from new");
+              console.log(others[l]);
+            }
+          }
+          else{
+            newkids.push(orig_parent.children[k]);
+            console.log("Added to newkids from old");
+            console.log(orig_parent.children[k]);
+          }
+        }
+        console.log("These are newkids");
+        console.log(newkids);
+        console.log("Orig_parent with orig remaining kids:");
+        console.log(orig_parent);
+        orig_parent.children = newkids;
+        console.log("With new kids");
+        console.log(orig_parent);
         break;
       };
     };
@@ -511,10 +546,11 @@ function update_pane(dont_update_preview_pane){
   var childhtml = "";
   if(!tree_selected.inner)for(var i=0; i<tree_selected.children.length; i++)childhtml += htmlify(tree_selected.children[i]);
   else childhtml = tree_selected.inner;
-  inner_input.value = childhtml;
+  cm_editor.setValue(childhtml);
 }
-function hide_verbose_elements(){
-  for(var i=0; i<global_elts.length; i++){
+function hide_verbose_elements(from){
+  from = from || 0;
+  for(var i=from; i<global_elts.length; i++){
     if(global_elts[i].children.length){
       for(var j=0; j<global_elts[i].children.length; j++){
         if(!global_elts[i].children[j].start_tag){
@@ -538,7 +574,7 @@ function mapOut(root,level){
   var childhtml = \"\";\
   if(!tree_selected.inner)for(var i=0; i<tree_selected.children.length; i++)childhtml += htmlify(tree_selected.children[i]);\
   else childhtml = tree_selected.inner;\
-  inner_input.value = childhtml;\
+  cm_editor.setValue(childhtml);\
   return false;";
   var init_block_style = (
     (root.show_children)?
@@ -877,27 +913,54 @@ loadfunc = function(){
   inner_pane.style.left = window.innerWidth*0.2 + 1 + "px";
   inner_pane.style.top = window.innerHeight*0.55 + 1 + "px";
   loadElementChooser();
+  cm_editor = CodeMirror.fromTextArea(inner_input, {
+    lineNumbers: true,
+    theme : "the-matrix",
+    mode : "htmlmixed"
+  });
   window.onkeyup = function(e){
     e = e || event;
     if(e.keyCode == 46){
       if(!(tree_selected == doc) && tree_selected){tree_selected.remove();tree_selected=null;update_pane();}
     }
   }
-  inner_input.onblur = function(){
+  cm_editor.on("blur", function(){
     if(!tree_selected){
       console.log("No tree selected");
       return;}
     if(quick_load){
-    if(tree_selected.start_tag)tree_selected.children = codify(inner_input.value);
-    else tree_selected.inner = inner_input.value;
-    update_pane();
+    tree_selected.inner = cm_editor.getValue();
+    if(tree_selected == doc){
+      loadHTML(htmlify(doc));
+      tree_selected = doc;
+      return;
+    }
+    var child_html = "";
+    for(var i=0; i<tree_selected.parent.children.length; i++)child_html += htmlify(tree_selected.parent.children[i]);
+    tree_selected.parent.children = codify(child_html);
+    /*
+    if(tree_selected.start_tag || tree_selected.display_name == "File"){
+      alert("This element has a start tag");
+      tree_selected.children = codify(cm_editor.getValue());
+      hide_verbose_elements(tree_selected.global_id);
     }
     else{
-    tree_selected.inner = inner_input.value;
-    loadHTML(htmlify(doc));
-    inner_input.value = "";
+      alert("This element has no start tag");
+      var possible_children = codify(cm_editor.getValue());
+      console.log(possible_children);
+      tree_selected.replace(possible_children);
+    }*/
     }
-  }
+    else{
+    var orig_tree_id = tree_selected.global_id;
+    tree_selected.inner = cm_editor.getValue();
+    loadHTML(htmlify(doc));
+    tree_selected = getElt(orig_tree_id);
+    if(tree_selected)cm_editor.setValue("");
+    }
+    //possess_children(tree_selected);
+    update_pane();
+  });
   update_pane();
   document.getElementById("addup").onclick = function(e){
     e = e || event;
@@ -972,4 +1035,10 @@ function download(filename, text) {
   element.click();
 
   document.body.removeChild(element);
+}
+function possess_children(root){
+  for(var i=0; i<root.children.length; i++){
+    root.children[i].parent = root;
+    possess_children(root.children[i]);
+  }
 }
