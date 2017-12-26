@@ -4,7 +4,7 @@ element_chosen = null;
 tab_spaces = 2;
 constant_layout_update = true;
 doc = new elt("","","File");
-quick_load = false;
+quick_load = true;
 keep_newlines = false;
 function loadHTML(str){
   global_elts = [];
@@ -197,7 +197,7 @@ function make_from_start(str){
         }
         else{
           //Otherwise add attribute without value now
-          element.attEdit(current_val,""); //Added attribute
+          element.attEdit(current_att,""); //Added attribute
           current_att = ""; //Reset current attribute new_name
           getting_att = true; // Obviously we must start getting the next attribute name
         }
@@ -213,7 +213,10 @@ function make_from_start(str){
       i++; //Move to the next character
       while(str[i] != starting_quote || last_char == "\\"){ //While char isn't ending quote
         current_val += str[i]; //Add it to the current Value
-        last_char = str[i]; //Store the last char
+        if(last_char == "\\" && str[i] == "\\"){
+            last_char = "";
+        }
+        else last_char = str[i]; //Store the last char
         i++; //Move to the next character
       }
       //Char is now the ending quote, let's add it
@@ -234,6 +237,9 @@ function make_from_start(str){
     getting_val = false; //Stop getting attribute Value
     getting_att = true; //Start getting the next attribute(if there is one)
     }
+  }
+  if(current_att){
+    element.attEdit(current_att,current_val);
   }
   return element;
 }
@@ -280,6 +286,7 @@ function split_string(str){
   var c = 0;
   var current = "";
   var last = "";
+  var second_last = "";
   var in_string = false;
   var start_quote = "";
   while(c < str.length){//For each character in the string
@@ -294,14 +301,22 @@ function split_string(str){
         current += str[c]; //Finish the tag off
         current = filter(current);
         if(current)list.push(current); //Push current to the list
-        current = ""; //Reset current value
+        var current = "";
+        var last = "";
+        var second_last = "";
+        var in_string = false;
+        var start_quote = "";
         c++; //Move to next character
         continue;
       }
       else { //Else we are at the beginning of a tag
         current = filter(current);
         if(current)list.push(current); //Push current to the list
-        current = ""; //Reset current value
+        var current = "";
+        var last = "";
+        var second_last = "";
+        var in_string = false;
+        var start_quote = "";
         current += str[c]; //Add beginning of start tag to current
         c++; //Move to the next character
         continue;
@@ -310,7 +325,7 @@ function split_string(str){
     else{ //Else we are inside some tag or in the innerHTML
       current += str[c]; //Add the char to current;
       if(!in_string){ //If we weren't in a string
-        if("'\"".includes(str[c])){ //If we just wrote a quote
+        if("'\"".includes(str[c]) && !(str[c] == "'" && last && "abcdefghijklmnopqrstuvwxyz0123456789".includes(last.toLowerCase())) ){ //If we just wrote a quote
             in_string = true; //Then we are now in a string
             start_quote = str[c]; //Store the starting quote
         }
@@ -322,7 +337,15 @@ function split_string(str){
           }
       }
     }
-    last = str[c]; //Set the last character
+    var this_second_last = second_last;
+    var this_last = last;
+    var this_current = str[c];
+    second_last = last;
+    last = str[c];
+    if(this_current == "\\" && this_last == "\\"){
+      last = "";
+      second_last = "";
+    }
     c++; //Go to next character
   }
   current = filter(current);
@@ -343,7 +366,7 @@ function codify(str){
     }
     else if(identify_tag_type(list[i]) == "end"){ //Otherwise if we are closing a tag
       if(identify_start_from_end(list[i]) != current_container.start_tag){ //If start tag doesn't match end tag
-        alert("Something is wrong with a closing tag in your code... I will try fixing it though... If invalid data is imported please try to fix your html and try again.");
+        alert("Something is wrong with a closing tag in your code... You are in container: "+current_container.start_tag+" and are trying to close a "+identify_start_from_end(list[i]) + " tag!...(List position: "+i+")");
         current_container.end_tag = "/"+current_container.start_tag;
         current_container = current_container.parent; //Use parent as current container
       }
@@ -353,7 +376,7 @@ function codify(str){
       }
     }
     else{ //Otherwise it is plain text
-      var plain_holder = current_container.makeChild("","","Plain Text"); //Make a container for it
+      var plain_holder = current_container.makeChild("","","Text"); //Make a container for it
       plain_holder.inner = list[i]; //Set the innerHTML of the plain to be current
     }
   }
@@ -476,27 +499,42 @@ function addInside(){
   tree_selected.makeChild(""+element_chosen.start_tag,""+element_chosen.end_tag,""+element_chosen.display_name);
   update_pane();
 }
-function update_pane(){
+function update_pane(dont_update_preview_pane){
   html_tree_pane.innerHTML = "<table cellspacing='2' cellpadding='0' id='tree_table'>"+ mapOut(doc)+"</table>";
   loadAtts();
+  if(!dont_update_preview_pane){
   preview_pane.contentWindow.document.open("text/htmlreplace");
   preview_pane.contentWindow.document.write(htmlify(doc));
   preview_pane.contentWindow.document.close();
+  }
   if(!tree_selected)return;
   var childhtml = "";
   if(!tree_selected.inner)for(var i=0; i<tree_selected.children.length; i++)childhtml += htmlify(tree_selected.children[i]);
   else childhtml = tree_selected.inner;
   inner_input.value = childhtml;
 }
+function hide_verbose_elements(){
+  for(var i=0; i<global_elts.length; i++){
+    if(global_elts[i].children.length){
+      for(var j=0; j<global_elts[i].children.length; j++){
+        if(!global_elts[i].children[j].start_tag){
+          global_elts[i].show_children = false;
+          break;
+        }
+      }
+    }
+  }
+  update_pane(true);
+}
 function mapOut(root,level){
   level = level || 0;
   var right_click = "var currentElt = getElt("+root.global_id+");\
     currentElt.show_children = !currentElt.show_children;\
-    update_pane();\
+    update_pane(true);\
     return false;";
   var left_click = "var currentElt = getElt("+root.global_id+");\
   tree_selected = currentElt;\
-  update_pane();\
+  update_pane(true);\
   var childhtml = \"\";\
   if(!tree_selected.inner)for(var i=0; i<tree_selected.children.length; i++)childhtml += htmlify(tree_selected.children[i]);\
   else childhtml = tree_selected.inner;\
@@ -639,12 +677,110 @@ elements = [
     description : "An image element"
   },
   {
-    display_name : "Plain Text",
+    display_name : "Text",
     start_tag : "",
     end_tag : "",
     description : "Plain text(no tag)"
+  },
+  {
+    display_name : "Comment",
+    start_tag : "!--",
+    end_tag : "",
+    description : "An HTML comment (does nothing at all)"
+  },
+  {
+    display_name : "Link",
+    start_tag : "link",
+    end_tag : "",
+    description : "Usually used to load external resources, especially stylesheets"
+  },
+  {
+    display_name : "Hyperlink",
+    start_tag : "a",
+    end_tag : "/a",
+    description : "Usually opens a specified link when clicked on"
+  },
+  {
+    display_name : "Table",
+    start_tag : "table",
+    end_tag : "/table",
+    description : "Used to make tables"
+  },
+  {
+    display_name : "Table Head",
+    start_tag : "thead",
+    end_tag : "/thead",
+    description : "The head of a table"
+  },
+  {
+    display_name : "Table Body",
+    start_tag : "tbody",
+    end_tag : "/tbody",
+    description : "The body of a table"
+  },
+  {
+    display_name : "Table Row",
+    start_tag : "tr",
+    end_tag : "/tr",
+    description : "A table row"
+  },
+  {
+    display_name : "Table Cell",
+    start_tag : "td",
+    end_tag : "/td",
+    description : "A cell in a table"
+  },
+  {
+    display_name : "Line Break",
+    start_tag : "br",
+    end_tag : "",
+    description : "Begins on a new line"
+  },
+  {
+    display_name : "Unordered List",
+    start_tag : "ul",
+    end_tag : "/ul",
+    description : "A bulleted list"
+  },
+  {
+    display_name : "Ordered List",
+    start_tag : "ol",
+    end_tag : "/ol",
+    description : "A numbered list"
+  },
+  {
+    display_name : "List Item",
+    start_tag : "li",
+    end_tag : "/li",
+    description : "An item in an ordered or unordered list"
+  },
+  {
+    display_name : "Div",
+    start_tag : "div",
+    end_tag : "/div",
+    description : "Used to group elements or put them into divisions"
+  },
+  {
+    display_name : "Span",
+    start_tag : "span",
+    end_tag : "/span",
+    description : "Used to group elements (similar to Divs but doesn't break the flow)"
+  },
+  {
+    display_name : "Document Type",
+    start_tag : "!DOCTYPE",
+    end_tag : "",
+    description : "Used to specify the type of document"
   }
 ]
+elements.sort(function(a,b){
+  var nameA=a.display_name.toLowerCase(), nameB=b.display_name.toLowerCase()
+	if (nameA < nameB)
+ 		return -1
+	if (nameA > nameB)
+		return 1
+	return 0;
+});
 function search_elt(){
   var keys = element_search.value.toLowerCase().split(" ");
   for(var i=0; i < elements.length; i++){
@@ -765,7 +901,7 @@ loadfunc = function(){
   update_pane();
   document.getElementById("addup").onclick = function(e){
     e = e || event;
-    if(e.ctrlKey){
+    if(e.ctrlKey || toggler.className == "on"){
       var user_tag = prompt("Enter a tag name to add");
       var end_tag = "";
       if(confirm("Click ok if it has an end tag. Otherwise click cancel"))end_tag = "/"+user_tag;
@@ -776,7 +912,7 @@ loadfunc = function(){
   }
   document.getElementById("addin").onclick = function(e){
     e = e || event;
-    if(e.ctrlKey){
+    if(e.ctrlKey || toggler.className == "on"){
       var user_tag = prompt("Enter a tag name to add");
       var end_tag = "";
       if(confirm("Click ok if it has an end tag. Otherwise click cancel"))end_tag = "/"+user_tag;
@@ -810,6 +946,7 @@ loadfunc = function(){
     var reader = new FileReader();
     reader.onload = function(e) {
       loadHTML(reader.result);
+      hide_verbose_elements();
     };
     reader.readAsText(file);
   }

@@ -2,6 +2,7 @@ html, body {
   background:rgba(0,0,0,0.8);
   color:white;
   overflow:hidden;
+  user-select:none;
 }
 #tree_table{
   z-index:0;
@@ -222,4 +223,10 @@ display: none;
 .selected {
   color:green;
   background:rgb(255,255,255);
+}
+input {
+  user-select:all;
+}
+textarea {
+  user-select:all;
 }
