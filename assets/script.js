@@ -460,6 +460,13 @@ function elt(start_tag,end_tag,display_name){
       };
     };
   };
+  this.removeChildren = function(){
+	  for(var i=0; i<this.children.length;i++)
+	  	this.removeChild(this.children[i]);
+  }
+  this.addChildren = function(kids){
+	  for(var i=0; i<kids.length; i++)this.addChild(kids[i]);
+  }
   this.replace = function(others){
     if(this.parent)for(var j=0; j<this.parent.children.length;j++){
       if(this.parent.children[j] == this){
@@ -934,20 +941,26 @@ loadfunc = function(){
   }
   cm_editor.on("blur", function(){
     if(!tree_selected){
-      console.log("No tree selected");
+      alert("No tree selected");
       return;}
     if(quick_load){
     tree_selected.inner = cm_editor.getValue();
     if(tree_selected == doc){
       loadHTML(htmlify(doc));
       tree_selected = doc;
+	  hide_verbose_in(doc);
       return;
     }
     var child_html = "";
-    for(var i=0; i<tree_selected.parent.children.length; i++)child_html += htmlify(tree_selected.parent.children[i]);
-    var oparent = tree_selected.parent;
-	tree_selected.parent.children = codify(child_html);
+	var oparent = tree_selected.parent;
+	while(!oparent.start_tag && oparent.parent)oparent = oparent.parent;
+	for(var i=0; i<oparent.children.length; i++)child_html += htmlify(oparent.children[i]);
+	//oparent.removeChildren();
+	oparent.children = codify(child_html);
+	possess_children(oparent);
 	hide_verbose_in(oparent);
+	tree_selected = oparent;
+	update_pane();
     /*
     if(tree_selected.start_tag || tree_selected.display_name == "File"){
       alert("This element has a start tag");
