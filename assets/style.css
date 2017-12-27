@@ -230,3 +230,40 @@ input {
 textarea {
   user-select:all;
 }
+#wrapper {
+  height:inherit;
+  width;fit-content;
+  padding-right:1px;
+  color:white;
+  float:left;
+  font-size:1.8vw;
+  font-family:Courier Garamond Verdana Serif;
+  background:rgba(0,0,0,0.2);
+  border-right:0.1px solid black;
+}
+#wrapper:hover{
+  cursor:pointer;
+  background:rgba(0,0,0,0.5);
+  border-right:0.1px solid grey;
+}
+
+.parent-center {
+  -webkit-transform-style: preserve-3d;
+  -moz-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+}
+
+.center {
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+#inner-updater-off{
+  background:black;
+  color:violet;
+}
+#inner-updater-on{
+  border-left:0.1px solid white;
+  background:grey;
+  color:black;
+}

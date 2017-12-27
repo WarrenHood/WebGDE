@@ -2,10 +2,32 @@ global_elts = [];
 tree_selected = null;
 element_chosen = null;
 tab_spaces = 1;
-constant_layout_update = false;
+constant_layout_update = true;
 doc = new elt("","","File");
 quick_load = true; //Quick load broken
 keep_newlines = false;
+auto_in_up = false;
+function toggle_auto_in(){
+  var on = document.getElementById("inner-updater-on");
+  var off = document.getElementById("inner-updater-off");
+  auto_in_up = !auto_in_up;
+  if(auto_in_up){
+    off.style.background = "grey";
+    off.style.color = "black";
+    //off.style.borderLeft = "0.1px solid green";
+    on.style.background = "black";
+    on.style.color = "lime";
+    on.style.borderLeft = "0.1px solid white";
+  }
+  else{
+    off.style.background = "black";
+    off.style.color = "violet";
+    //off.style.borderLeft = "0.1px solid red";
+    on.style.background = "grey";
+    on.style.color = "black";
+    on.style.borderLeft = "0.1px solid white";
+  }
+}
 function loadHTML(str){
   global_elts = [];
   tree_selected = null;
@@ -15,6 +37,7 @@ function loadHTML(str){
   doc = new elt("","","File");
   doc.children = codify(str);
   update_pane();
+  update_cm();
 }
 /*
 function codify(str){
@@ -549,6 +572,8 @@ function update_pane(dont_update_preview_pane){
   preview_pane.contentWindow.document.write(htmlify(doc));
   preview_pane.contentWindow.document.close();
   }
+}
+function update_cm(){
   if(!tree_selected)return;
   var childhtml = "";
   if(!tree_selected.inner)for(var i=0; i<tree_selected.children.length; i++)childhtml += htmlify(tree_selected.children[i]);
@@ -582,6 +607,7 @@ function mapOut(root,level){
   var right_click = "var currentElt = getElt("+root.global_id+");\
     currentElt.show_children = !currentElt.show_children;\
     update_pane(true);\
+    update_cm();\
     return false;";
   var left_click = "var currentElt = getElt("+root.global_id+");\
   tree_selected = currentElt;\
@@ -602,7 +628,7 @@ function mapOut(root,level){
   "color:white;background:purple;")
   +
   "\
-    border:0.5px solid blue;border-right:none;\
+    border:0.5px solid violet;border-right:none;\
     height:inherit;width:fit-content;z-index:1;  '\
    onclick='"+left_click+"' \
    oncontextmenu=\""+right_click+"\">"+root.display_name+"</div></td>" + stringrep("<td style='border:none;'></td>",getDepth(doc)*2-1-level)+"</tr>";
@@ -610,6 +636,11 @@ function mapOut(root,level){
     str += mapOut(root.children[i],level+1);
   };
   return str;
+}
+function nchild(parent,it){
+  for(var i=0; i<parent.children.length;i++){
+    if(parent.children[i] == it)return i;
+  }
 }
 function getDepth(root,level,most){
   level = level || 1;
@@ -620,6 +651,7 @@ function getDepth(root,level,most){
   }
   return most;
 }
+
 htdoc = doc.makeChild("html","/html","HTML Document")
 doc_head = htdoc.makeChild("head","/head","Head");
 doc_body = htdoc.makeChild("body","/body","Body");
@@ -927,6 +959,9 @@ loadfunc = function(){
   inner_pane.style.height = window.innerHeight*0.45 - 2 + "px";
   inner_pane.style.left = window.innerWidth*0.2 + 1 + "px";
   inner_pane.style.top = window.innerHeight*0.55 + 1 + "px";
+  inner_heading = document.getElementById("inner-heading");
+  inner_heading.style.left = ((window.innerWidth*0.5-2)-inner_heading.clientWidth)/2 + "px";
+  inner_wrapper = document.getElementById("wrapper");
   loadElementChooser();
   cm_editor = CodeMirror.fromTextArea(inner_input, {
     lineNumbers: true,
@@ -941,26 +976,39 @@ loadfunc = function(){
   }
   cm_editor.on("blur", function(){
     if(!tree_selected){
-      alert("No tree selected");
+      console.log("No tree element selected");
       return;}
     if(quick_load){
     tree_selected.inner = cm_editor.getValue();
     if(tree_selected == doc){
       loadHTML(htmlify(doc));
       tree_selected = doc;
-	  hide_verbose_in(doc);
+      hide_verbose_in(doc);
+      update_pane(true);
       return;
     }
-    var child_html = "";
+  inner_wrapper.onclick = function(){
+    if(!element_chosen || !cm_editor.doc.getSelection())return;
+    var res = "";
+    if(element_chosen.start_tag)res += "<"+element_chosen.start_tag+">";
+    res += cm_editor.doc.getSelection();
+    if(element_chosen.end_tag)res += "<"+element_chosen.end_tag+">";
+    cm_editor.doc.replaceSelection(res);
+    cm_editor._handlers.blur[0]();
+  }
+  var child_html = "";
 	var oparent = tree_selected.parent;
-	while(!oparent.start_tag && oparent.parent)oparent = oparent.parent;
+	//while(!oparent.start_tag && oparent.parent)oparent = oparent.parent;
+  var child_pos = nchild(oparent,tree_selected);
 	for(var i=0; i<oparent.children.length; i++)child_html += htmlify(oparent.children[i]);
 	//oparent.removeChildren();
 	oparent.children = codify(child_html);
 	possess_children(oparent);
-	hide_verbose_in(oparent);
+	if(child_pos === undefined)hide_verbose_in(oparent);
 	tree_selected = oparent;
+  if(child_pos !== undefined)tree_selected = oparent.children[child_pos];
 	update_pane();
+  if(child_pos === undefined)update_cm();
     /*
     if(tree_selected.start_tag || tree_selected.display_name == "File"){
       alert("This element has a start tag");
@@ -983,6 +1031,22 @@ loadfunc = function(){
     }
     //possess_children(tree_selected);
     update_pane();
+  });
+  cm_editor.on("keyup",function(){
+    if(!tree_selected){
+      cm_editor.setValue("");
+      return;
+    }
+    var ln_ch = cm_editor.getCursor();
+    var key = cm_editor.getLine(ln_ch.line).slice(ln_ch.ch-1);
+    console.log(key);
+    if(key  != "\n" && auto_in_up && "\"'<>".includes(key)){
+      toggle_auto_in();
+      //alert("We have disabled auto update while typing because you pressed: \""+key+"\" ... This type of key can crash the editor.\nPlease only use auto update while typing when you aren't writing tags or quotes.");
+    }
+    else if((!auto_in_up) && !(cm_editor.getValue().includes("<") || cm_editor.getValue().includes(">") || cm_editor.getValue().includes("\"") || cm_editor.getValue().includes("'")))toggle_auto_in();
+    else if((auto_in_up) && (cm_editor.getValue().includes("<") || cm_editor.getValue().includes(">") || cm_editor.getValue().includes("\"") || cm_editor.getValue().includes("'")))toggle_auto_in();
+    if(auto_in_up)cm_editor._handlers.blur[0]();
   });
   update_pane();
   document.getElementById("addup").onclick = function(e){

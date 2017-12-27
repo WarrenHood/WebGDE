@@ -43,7 +43,15 @@
     <div id="element-head">Element Chooser<div id="toggler" class="off">Specify?</div></div>
     <input id="element-search"  onkeyup="search_elt();"value="Search for elements..." onblur="javascript: document.getElementById('element-search').value = 'Search for elements...';" onfocus="javascript: document.getElementById('element-search').value = '';search_elt();"></input>
     <div id="element-chooser"></div>
-    <div id="inner-head">Inner HTML Editor</div>
+    <div id="inner-head">
+      <div id="wrapper">Wrap Selected</div>
+      <span id="inner-heading" style="position:absolute;height:inherit;width:fit-content;top:0px;">Inner HTML Editor</span>
+      <div id="inner-updater" style="font-size:1vw;height:inherit;width:fit-content;float:right;">
+        <div class="parent-center" style="height:inherit;width:fit-content;float:left;background:rgba(0,0,0,0);color:white;border-left:0.1px solid black;"><div style="height:fit-content;" class="center">Update while typing</div></div>
+        <div class="parent-center" onclick="toggle_auto_in()" id="inner-updater-off" style="cursor:pointer;height:inherit;width:fit-content;float:left;"><div style="height:fit-content;" class="center">Off</div></div>
+        <div class="parent-center" onclick="toggle_auto_in()" id="inner-updater-on" style="cursor:pointer;height:inherit;width:fit-content;float:left;"><div style="height:fit-content;" class="center">On</div></div>
+      </div>
+    </div>
     <div id="inner-pane"><textarea id="inner-input"></textarea></div>
     <div id="io-menu">
       <table>
