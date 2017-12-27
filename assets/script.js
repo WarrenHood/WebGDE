@@ -2,7 +2,7 @@ global_elts = [];
 tree_selected = null;
 element_chosen = null;
 tab_spaces = 1;
-constant_layout_update = true;
+constant_layout_update = false;
 doc = new elt("","","File");
 quick_load = true; //Quick load broken
 keep_newlines = false;
@@ -562,6 +562,14 @@ function hide_verbose_elements(from){
   }
   update_pane(true);
 }
+function hide_verbose_in(root){
+	for(var i=0; i<root.children.length;i++){
+		if(!root.children[i].start_tag){
+		root.show_children = false;
+		}
+		hide_verbose_in(root.children[i]);
+	}
+}
 function mapOut(root,level){
   level = level || 0;
   var right_click = "var currentElt = getElt("+root.global_id+");\
@@ -587,7 +595,7 @@ function mapOut(root,level){
   "color:white;background:purple;")
   +
   "\
-    border:0.5px solid black;border-right:none;\
+    border:0.5px solid blue;border-right:none;\
     height:inherit;width:fit-content;z-index:1;  '\
    onclick='"+left_click+"' \
    oncontextmenu=\""+right_click+"\">"+root.display_name+"</div></td>" + stringrep("<td style='border:none;'></td>",getDepth(doc)*2-1-level)+"</tr>";
@@ -808,13 +816,13 @@ elements = [
     end_tag : "",
     description : "Used to specify the type of document"
   }
-]
+];
 elements.sort(function(a,b){
   var nameA=a.display_name.toLowerCase(), nameB=b.display_name.toLowerCase()
 	if (nameA < nameB)
- 		return -1
+ 		return -1;
 	if (nameA > nameB)
-		return 1
+		return 1;
 	return 0;
 });
 function search_elt(){
@@ -937,7 +945,9 @@ loadfunc = function(){
     }
     var child_html = "";
     for(var i=0; i<tree_selected.parent.children.length; i++)child_html += htmlify(tree_selected.parent.children[i]);
-    tree_selected.parent.children = codify(child_html);
+    var oparent = tree_selected.parent;
+	tree_selected.parent.children = codify(child_html);
+	hide_verbose_in(oparent);
     /*
     if(tree_selected.start_tag || tree_selected.display_name == "File"){
       alert("This element has a start tag");
