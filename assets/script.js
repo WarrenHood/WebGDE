@@ -998,17 +998,23 @@ loadfunc = function(){
   }
   var child_html = "";
 	var oparent = tree_selected.parent;
-	//while(!oparent.start_tag && oparent.parent)oparent = oparent.parent;
+	while(!oparent.start_tag && oparent.parent)oparent = oparent.parent;
   var child_pos = nchild(oparent,tree_selected);
+  var child_length = oparent.children.length;
 	for(var i=0; i<oparent.children.length; i++)child_html += htmlify(oparent.children[i]);
 	//oparent.removeChildren();
 	oparent.children = codify(child_html);
 	possess_children(oparent);
 	if(child_pos === undefined)hide_verbose_in(oparent);
 	tree_selected = oparent;
-  if(child_pos !== undefined)tree_selected = oparent.children[child_pos];
-	update_pane();
-  if(child_pos === undefined)update_cm();
+  if(child_pos !== undefined && oparent.children.length == child_length)tree_selected = oparent.children[child_pos];
+  else {
+    tree_selected = oparent;
+    update_pane();
+    update_cm();
+    return;
+  }
+  update_pane();
     /*
     if(tree_selected.start_tag || tree_selected.display_name == "File"){
       alert("This element has a start tag");
@@ -1037,6 +1043,10 @@ loadfunc = function(){
       cm_editor.setValue("");
       return;
     }
+  cm_editor.on("focus",function(){
+    return;
+    cm_editor._handlers.blur[0]();
+  })
     var ln_ch = cm_editor.getCursor();
     var key = cm_editor.getLine(ln_ch.line).slice(ln_ch.ch-1);
     console.log(key);
