@@ -65,32 +65,43 @@ display: none;
   font-size:4vh;
 }
 .treebutton {
-  position:absolute;
+  float:right;
   text-align:center;
   color:teal;
-  font-size:4vh;
+  font-size:1.5vh;
   width:fit-content;
+  border-left:0.1px solid black;
+  padding-left:2px;
+  padding-right:2px;
 }
 #toggler{
-  position:absolute;
+  /*position:absolute;
+  top:0px;
+  left:0px;*/
+  float:left;
   text-align:center;
   cursor:pointer;
-  font-size:2.5vh;
+  font-size:1.5vh;
   width:fit-content;
-  left: 0px;
-  top:0px;
+  height:inherit;
 }
 .on{
-  color:green;
+  color:white;
+  background:rgba(0,0,0,0.7);
+  border-right:0.1px solid lime;
+  padding-right:1px;
 }
 .off{
-  color:red;
+  color:grey;
+  background:rgba(0,0,0,0.2);
+  border-right:0.1px solid black;
+  padding-right:1px;
 }
 .treebutton:hover {
   color:white;
   background:teal;
   cursor:pointer;
-}
+}/*
 #addup {
   right:0px;
   top:0px;
@@ -102,14 +113,14 @@ display: none;
 #addin {
   right:11vh;
   top:0px;
-}
+}*/
 #delete {
   color:red;
   cursor:pointer;
-  font-size:4vh;
-  position:absolute;
-  left:0px;
-  top:0px;
+  border-right:1px solid black;
+  padding-left:2px;
+  padding-right:2px;
+  float:left;
 }
 #delete:hover{
   background:red;
@@ -172,10 +183,11 @@ display: none;
 #att-add{
   color:teal;
   cursor:pointer;
-  font-size:4vh;
-  position:absolute;
-  right:0px;
-  top:0px;
+  font-size:2vh;
+  float:right;
+  padding-right:2px;
+  padding-left:2px;
+  border-left:0.1px solid black;
 }
 #att-add:hover {
   color:white;
@@ -201,10 +213,11 @@ display: none;
 #att-rem{
   color:red;
   cursor:pointer;
-  font-size:4vh;
-  position:absolute;
-  left:0px;
-  top:0px;
+  font-size:2vh;
+  float:left;
+  padding-right:2px;
+  padding-left:2px;
+  border-right:0.1px solid black;
 }
 #att-rem:hover{
   color:white;
@@ -248,12 +261,14 @@ textarea {
 }
 
 .parent-center {
+  height:inherit;
   -webkit-transform-style: preserve-3d;
   -moz-transform-style: preserve-3d;
   transform-style: preserve-3d;
 }
 
 .center {
+  height:fit-content;
   position: relative;
   top: 50%;
   transform: translateY(-50%);

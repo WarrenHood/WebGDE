@@ -453,7 +453,7 @@ function getElt(gl_id){
 }
 function elt(start_tag,end_tag,display_name){
   this.global_id = global_elts.length;
-  this.display_name = display_name || find_display_name(start_tag);
+  this.display_name = display_name || find_display_name(start_tag) || start_tag;
   this.start_tag = start_tag;
   this.end_tag = end_tag;
   this.inner = "";
@@ -465,6 +465,19 @@ function elt(start_tag,end_tag,display_name){
     if(index !== 0)index = index || this.children.length;
     var child = new elt(child_start,child_end,child_display);
     return this.addChild(child,index);
+  }
+  this.makeParent = function(parent_start,parent_end,parent_display){
+    parent_display = parent_display || find_display_name(parent_start);
+    var parent = new elt(parent_start,parent_end,parent_display);
+    return this.addParent(parent);
+  }
+  this.addParent = function(parent){
+    var original_parent = this.parent;
+    var original_index = nchild(original_parent,this);
+    parent.addChild(this);
+    original_parent.children[original_index] = parent;
+    parent.parent = original_parent;
+    return parent;
   }
   this.addChild = function(child,index){
     if(index !== 0)index = index || this.children.length;
@@ -546,6 +559,12 @@ function elt(start_tag,end_tag,display_name){
 }
 function getChildIndex(elt){
     for(var i=0;i<elt.parent.children.length;i++)if(elt.parent.children[i]==elt)return i;
+}
+function addOut(){
+  if((!element_chosen) || tree_selected == doc || (!tree_selected))return;
+  var toAdd = new elt(element_chosen.start_tag,element_chosen.end_tag,element_chosen.display_name);
+  tree_selected.addParent(toAdd);
+  update_pane();
 }
 function addAbove(){
   if((!element_chosen) || tree_selected == doc || (!tree_selected))return;
@@ -1059,13 +1078,24 @@ loadfunc = function(){
     if(auto_in_up)cm_editor._handlers.blur[0]();
   });
   update_pane();
+  document.getElementById("addout").onclick = function(e){
+    e = e || event;
+    if(e.ctrlKey || toggler.className == "on"){
+      var user_tag = prompt("Enter a tag name to add");
+      var end_tag = "";
+      if(confirm("Click ok if it has an end tag. Otherwise click cancel"))end_tag = "/"+user_tag;
+      element_chosen = {start_tag:user_tag,end_tag:end_tag,display_name:""};
+    }
+    addOut();
+    return false;
+  }
   document.getElementById("addup").onclick = function(e){
     e = e || event;
     if(e.ctrlKey || toggler.className == "on"){
       var user_tag = prompt("Enter a tag name to add");
       var end_tag = "";
       if(confirm("Click ok if it has an end tag. Otherwise click cancel"))end_tag = "/"+user_tag;
-      element_chosen = {start_tag:user_tag,end_tag:end_tag,display_name:user_tag};
+      element_chosen = {start_tag:user_tag,end_tag:end_tag,display_name:""};
     }
     addAbove();
     return false;
@@ -1076,7 +1106,7 @@ loadfunc = function(){
       var user_tag = prompt("Enter a tag name to add");
       var end_tag = "";
       if(confirm("Click ok if it has an end tag. Otherwise click cancel"))end_tag = "/"+user_tag;
-      element_chosen = {start_tag:user_tag,end_tag:end_tag,display_name:user_tag};
+      element_chosen = {start_tag:user_tag,end_tag:end_tag,display_name:""};
     }
     addInside();
     return false;
@@ -1088,7 +1118,7 @@ loadfunc = function(){
       var user_tag = prompt("Enter a tag name to add");
       var end_tag = "";
       if(confirm("Click ok if it has an end tag. Otherwise click cancel"))end_tag = "/"+user_tag;
-      element_chosen = {start_tag:user_tag,end_tag:end_tag,display_name:user_tag};
+      element_chosen = {start_tag:user_tag,end_tag:end_tag,display_name:""};
     }
     addBelow();
     return false;
