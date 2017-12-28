@@ -593,7 +593,10 @@ function update_pane(dont_update_preview_pane){
   }
 }
 function update_cm(){
-  if(!tree_selected)return;
+  if(!tree_selected){
+    cm_editor.setValue("");
+    return;
+  }
   var childhtml = "";
   if(!tree_selected.inner)for(var i=0; i<tree_selected.children.length; i++)childhtml += htmlify(tree_selected.children[i]);
   else childhtml = tree_selected.inner;
