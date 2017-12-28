@@ -1149,7 +1149,10 @@ loadfunc = function(){
     else toggler.className = "on";
   }
 }
-window.onload = loadfunc;
+window.onload = function(){
+  loadfunc();
+  loadHTML('<!DOCTYPE html><html><head><style></style></head><body bgcolor=black style="color:white;"><center><h1 style="color:white;">This is a simple website made by<i>WebGDE v1.0.3[ALPHA]</i></h1><p>WebGDE is a graphical webpage design enviroment. It can be used to either edit or create existing webpages whether they were made by WebGDE or not.</p><p>This is Free Open Source Software.</p><p>Get the source code from my Github<a href="https://www.github.com/WarrenHood/WebGDE"style="color:green;">repo</a></p><div style="float:right;">Developer : Warren Hood<br>Email : nullbyte001@gmail.com</div></center></body></html>');
+};
 if(constant_layout_update)setInterval(function(){
   if(window.innerWidth != last_width || window.innerHeight != last_height)
     loadfunc();
