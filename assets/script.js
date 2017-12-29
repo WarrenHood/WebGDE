@@ -1,7 +1,7 @@
 global_elts = [];
 tree_selected = null;
 element_chosen = null;
-tab_spaces = 1;
+tab_spaces = 4;
 constant_layout_update = true;
 doc = new elt("","","File");
 quick_load = true; //Quick load broken
@@ -32,7 +32,6 @@ function loadHTML(str){
   global_elts = [];
   tree_selected = null;
   element_chosen = null;
-  tab_spaces = 1;
   constant_layout_update = true;
   doc = new elt("","","File");
   doc.children = codify(str);
@@ -312,18 +311,48 @@ function split_string(str){
   var second_last = "";
   var in_string = false;
   var start_quote = "";
+  var in_js = false;
+  var in_start = false;
+  var comment_line = false;
+  var comment_multi = false;
   while(c < str.length){//For each character in the string
     if(!in_string){//If we aren't in a string
         if(str[c] == "\n" && !keep_newlines){
-          c++;
-          continue;
+          if(!in_js){
+            c++;
+            continue;
+          }
+          else if(!comment_multi)comment_line = false;
         }
     }
-    if((!in_string) && (str[c] == "<" || str[c] == ">")){ //If we are at the start or end of a tag
+    if((!in_string) && (!comment_line) && (!comment_multi) && (str[c] == "<" || str[c] == ">")){ //If we are at the start or end of a tag
       if(str[c] == ">"){ //If we are at the end
+        in_start = false;
         current += str[c]; //Finish the tag off
         current = filter(current);
         if(current)list.push(current); //Push current to the list
+        //if(current && make_from_start(current).start_tag == "script"){in_js = true;alert("Entered a script");}//if(current && identify_start_from_end(current) == "script"){in_js = false;alert("We just exited a script");}
+        if(current){
+          if(identify_tag_type(current) == "start"){
+            if(make_from_start(current).start_tag == "script"){
+              in_js = true;
+              var current = "";
+              var last = "";
+              var second_last = "";
+              var in_string = false;
+              var start_quote = "";
+              c++; //Move to next character
+              var new_splitted = str.slice(c,str.length).split("</scri"+"pt>");
+              list.push(new_splitted[0]);
+              list.push("</script>");
+              new_splitted.splice(0,1);
+              c = 0;
+              str = new_splitted.join("</script>");
+              continue;
+            }
+          }
+          else if(identify_start_from_end(current) == "script")in_js = false;
+        }
         var current = "";
         var last = "";
         var second_last = "";
@@ -333,8 +362,10 @@ function split_string(str){
         continue;
       }
       else { //Else we are at the beginning of a tag
+        in_start = true;
         current = filter(current);
         if(current)list.push(current); //Push current to the list
+        //if(current && make_from_start(current).start_tag == "script"){in_js = true;alert("Entered a script");}
         var current = "";
         var last = "";
         var second_last = "";
@@ -348,7 +379,7 @@ function split_string(str){
     else{ //Else we are inside some tag or in the innerHTML
       current += str[c]; //Add the char to current;
       if(!in_string){ //If we weren't in a string
-        if("'\"".includes(str[c]) && !(str[c] == "'" && last && "abcdefghijklmnopqrstuvwxyz0123456789".includes(last.toLowerCase())) ){ //If we just wrote a quote
+        if(!comment_line && !comment_multi && (in_js || in_start) && "'\"".includes(str[c]) && !(str[c] == "'" && last && "abcdefghijklmnopqrstuvwxyz0123456789".includes(last.toLowerCase())) ){ //If we just wrote a quote
             in_string = true; //Then we are now in a string
             start_quote = str[c]; //Store the starting quote
         }
@@ -368,6 +399,15 @@ function split_string(str){
     if(this_current == "\\" && this_last == "\\"){
       last = "";
       second_last = "";
+    }
+    if(!in_string && in_js && !comment_multi && this_current == "/" && this_last == "/"){
+      comment_line = true;
+    }
+    if(!in_string && in_js && !comment_line && this_current == "*" && this_last == "/"){
+      comment_multi = true;
+    }
+    if(!in_string && in_js && !comment_line && this_current == "/" && this_last == "*"){
+      comment_multi = false;
     }
     c++; //Go to next character
   }
@@ -409,7 +449,7 @@ function htmlify(root,tabdepth){
   tabdepth = tabdepth || 0;
   var str = "";
   if(root.start_tag){
-    str += stringrep(stringrep(" ",tabdepth),tab_spaces)+"<"+root.start_tag;
+    str += stringrep("\t",tabdepth)+"<"+root.start_tag;
     for(var i=0; i<root.atts.length; i++){
       str += " " + root.atts[i].name;
       if(root.atts[i].val)str += "=" + root.atts[i].val;
@@ -417,13 +457,15 @@ function htmlify(root,tabdepth){
     str += ">\n";
   }
   if(root.inner){
-    if(root.start_tag && root.end_tag)str += stringrep(stringrep(" ",tabdepth+1),tab_spaces);
-    str += root.inner + "\n";
+    //if(root.start_tag && root.end_tag);
+    str += stringrep("\t",tabdepth+1)
+    str += root.inner;
+    if(root.inner.slice(-1) != "\n")str += "\n";
   }
   else
     for(var i=0; i<root.children.length; i++)str += htmlify(root.children[i],tabdepth+1);
-  if(root.end_tag)str += stringrep(stringrep(" ",tabdepth),tab_spaces) + "<" + root.end_tag + ">";
-  str += "\n";
+  if(root.end_tag)str += stringrep("\t",tabdepth) + "<" + root.end_tag + ">";
+  if(str.slice(-1) != "\n")str += "\n";
   return str;
 }
 function stringrep(char,reps){
@@ -988,8 +1030,16 @@ loadfunc = function(){
   cm_editor = CodeMirror.fromTextArea(inner_input, {
     lineNumbers: true,
     theme : "the-matrix",
-    mode : "htmlmixed"
+    mode : "htmlmixed",
+    lineWrapping : false
   });
+  var charWidth = cm_editor.defaultCharWidth(), basePadding = 4;
+     /*cm_editor.on("renderLine", function(cm, line, elmt) {
+       var off = CodeMirror.countColumn(line.text, null, cm.getOption("tabSize")) * charWidth;
+       elmt.style.textIndent = "-" + off + "px";
+       elmt.style.paddingLeft = (basePadding + off) + "px";
+     });
+     cm_editor.refresh();*/
   window.onkeyup = function(e){
     e = e || event;
     if(e.keyCode == 46){
@@ -1151,7 +1201,7 @@ loadfunc = function(){
 }
 window.onload = function(){
   loadfunc();
-  loadHTML('<!DOCTYPE html><html><head><style></style></head><body bgcolor=black style="color:white;"><center><h1 style="color:white;">This is a simple website made by<i>WebGDE v1.0.3[ALPHA]</i></h1><p>WebGDE is a graphical webpage design enviroment. It can be used to either edit or create existing webpages whether they were made by WebGDE or not.</p><p>This is Free Open Source Software.</p><p>Get the source code from my Github<a href="https://www.github.com/WarrenHood/WebGDE"style="color:green;">repo</a></p><div style="float:right;">Developer : Warren Hood<br>Email : nullbyte001@gmail.com</div></center></body></html>');
+  //loadHTML('<!DOCTYPE html><html><head><style></style></head><body bgcolor=black style="color:white;"><center><h1 style="color:white;">This is a simple website made by<i>WebGDE v1.0.3[ALPHA]</i></h1><p>WebGDE is a graphical webpage design enviroment. It can be used to either edit or create existing webpages whether they were made by WebGDE or not.</p><p>This is Free Open Source Software.</p><p>Get the source code from my Github<a href="https://www.github.com/WarrenHood/WebGDE"style="color:green;">repo</a></p><div style="float:right;">Developer : Warren Hood<br>Email : nullbyte001@gmail.com</div></center></body></html>');
 };
 if(constant_layout_update)setInterval(function(){
   if(window.innerWidth != last_width || window.innerHeight != last_height)

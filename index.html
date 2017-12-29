@@ -40,7 +40,7 @@
         Add Below
         </div>
       </div>
-      <div id="delete" class="treebutton parent-center" onclick="if(!(tree_selected == doc)){if(tree_selected.parent)oparent=tree_selected.parent;tree_selected.remove();inner_input.value = '';}tree_selected=null;if(oparent)tree_selected=oparent;update_pane();update_cm();">
+      <div id="delete" class="treebutton parent-center" onclick="if(!(tree_selected == doc)){var oparent=null;if(tree_selected.parent)oparent=tree_selected.parent;tree_selected.remove();inner_input.value = '';}tree_selected=null;if(oparent)tree_selected=oparent;update_pane();update_cm();">
         <div class="center">
           Delete
         </div>
