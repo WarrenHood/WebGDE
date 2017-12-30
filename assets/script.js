@@ -274,11 +274,21 @@ function identify_start_from_end(str){
   return filtered;
 }
 function identify_tag_type(str){
-  if(str[0] != "<")return "plain";
+  if(str[0] != "<" || str[str.length-1] != ">")return "plain";
   var i = 1;
   while(i < str.length && str[i] == " ")i++;
   if(str[i] == "/")return "end";
   return "start";
+}
+function fix_split(ls){
+  for(var i=0; i < ls.length; i++){
+    if(identify_tag_type(ls[i]) != "plain")continue;
+    var j=i+1;
+    while(j < ls.length && identify_tag_type(ls[j]) == "plain"){
+      ls[i] += ls[j];
+      ls.splice(j,1);
+    }
+  }
 }
 function has_closing_tag(start_name,array,start){
   start = start || 0;
@@ -328,36 +338,25 @@ function split_string(str){
     if((!in_string) && (!comment_line) && (!comment_multi) && (str[c] == "<" || str[c] == ">")){ //If we are at the start or end of a tag
       if(str[c] == ">"){ //If we are at the end
         in_start = false;
-        current += str[c]; //Finish the tag off
+        var is_that_special_moment = false;
+        if(current && !(in_js && current != "</script") )current += str[c]; //Finish the tag off
+        else is_that_special_moment = true;
         current = filter(current);
-        if(current)list.push(current); //Push current to the list
+        if(current && !is_that_special_moment)list.push(current); //Push current to the list
         //if(current && make_from_start(current).start_tag == "script"){in_js = true;alert("Entered a script");}//if(current && identify_start_from_end(current) == "script"){in_js = false;alert("We just exited a script");}
         if(current){
           if(identify_tag_type(current) == "start"){
-            if(make_from_start(current).start_tag == "script"){
-              in_js = true;
-              var current = "";
-              var last = "";
-              var second_last = "";
-              var in_string = false;
-              var start_quote = "";
-              c++; //Move to next character
-              var new_splitted = str.slice(c,str.length).split("</scri"+"pt>");
-              list.push(new_splitted[0]);
-              list.push("</script>");
-              new_splitted.splice(0,1);
-              c = 0;
-              str = new_splitted.join("</script>");
-              continue;
-            }
+            if(make_from_start(current).start_tag == "script")in_js = true;
           }
           else if(identify_start_from_end(current) == "script")in_js = false;
         }
+        if(!is_that_special_moment){
         var current = "";
         var last = "";
         var second_last = "";
         var in_string = false;
         var start_quote = "";
+      }
         c++; //Move to next character
         continue;
       }
@@ -417,6 +416,7 @@ function split_string(str){
 }
 function codify(str){
   var list = split_string(str); //Split all of the elements into a list
+  fix_split(list);
   var container = new elt("",""); //Create a container
   var current_container = container; //Use container as current one
   for(var i=0; i<list.length; i++){ //For each index in our list
