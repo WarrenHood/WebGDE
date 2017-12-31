@@ -1,4 +1,5 @@
 global_elts = [];
+elements_loaded = false;
 tree_selected = null;
 element_chosen = null;
 tab_spaces = 4;
@@ -7,6 +8,242 @@ doc = new elt("","","File");
 quick_load = true; //Quick load broken
 keep_newlines = false;
 auto_in_up = false;
+function eltLoad(){
+  elements_loaded = true;
+  elements = [
+  {
+    display_name : "[FORMAT] Bold",
+    start_tag : "b",
+    end_tag : "/b",
+    description : "Formats children text bold"
+  },
+  {
+    display_name : "[FORMAT] Italics",
+    start_tag : "i",
+    end_tag : "/i",
+    description : "Formats children text in italics"
+  },
+  {
+    display_name : "[FORMAT] Underline",
+    start_tag : "u",
+    end_tag : "/u",
+    description : "Underlines children text"
+  },
+  {
+    display_name : "HTML document",
+    start_tag : "html",
+    end_tag : "/html",
+    description : "The actual html document element"
+  },
+  {
+    display_name : "Head",
+    start_tag : "head",
+    end_tag : "/head",
+    description : "The html head tag"
+  },
+  {
+    display_name : "Title",
+    start_tag : "title",
+    end_tag : "/title",
+    description : "Sets the webpage title"
+  },
+  {
+    display_name : "Style",
+    start_tag : "style",
+    end_tag : "/style",
+    description : "An embedded CSS stylesheet"
+  },
+  {
+    display_name : "Body",
+    start_tag : "body",
+    end_tag : "/body",
+    description : "Element containing the page content",
+    default_atts : [
+      {
+        name : "bgcolor",
+        val : "\"\""
+      }
+  ]
+  },
+  {
+    display_name : "Paragraph",
+    start_tag : "p",
+    end_tag : "/p",
+    description : "A paragraph element"
+  },
+  {
+    display_name : "Heading 1",
+    start_tag : "h1",
+    end_tag : "/h1",
+    description : "The biggest heading"
+  },
+  {
+    display_name : "Heading 2",
+    start_tag : "h2",
+    end_tag : "/h2",
+    description : "The second biggest heading"
+  },
+  {
+    display_name : "Heading 3",
+    start_tag : "h3",
+    end_tag : "/h3",
+    description : "The third biggest heading"
+  },
+  {
+    display_name : "Heading 4",
+    start_tag : "h4",
+    end_tag : "/h4",
+    description : "The third smallest heading"
+  },
+  {
+    display_name : "Heading 5",
+    start_tag : "h5",
+    end_tag : "/h5",
+    description : "The second smallest heading"
+  },
+  {
+    display_name : "Heading 6",
+    start_tag : "h6",
+    end_tag : "/h6",
+    description : "The smallest heading"
+  },
+  {
+    display_name : "Image",
+    start_tag : "img",
+    end_tag : "",
+    description : "An image element",
+    default_atts : [
+      {
+        name : "src",
+        val : "\"\""
+      }
+  ]
+  },
+  {
+    display_name : "Text",
+    start_tag : "",
+    end_tag : "",
+    description : "Plain text(no tag)"
+  },
+  {
+    display_name : "Comment",
+    start_tag : "!--",
+    end_tag : "",
+    description : "An HTML comment (does nothing at all)"
+  },
+  {
+    display_name : "Link",
+    start_tag : "link",
+    end_tag : "",
+    description : "Usually used to load external resources, especially stylesheets",
+    default_atts : [
+      {
+        name : "rel",
+        val : "\"\""
+      },
+      {
+        name : "type",
+        val : "\"\""
+      },
+      {
+        name : "href",
+        val : "\"\""
+      }
+  ]
+  },
+  {
+    display_name : "Hyperlink",
+    start_tag : "a",
+    end_tag : "/a",
+    description : "Usually opens a specified link when clicked on",
+    default_atts : [
+      {
+        name : "href",
+        val : "\"\""
+      }
+  ]
+  },
+  {
+    display_name : "Table",
+    start_tag : "table",
+    end_tag : "/table",
+    description : "Used to make tables"
+  },
+  {
+    display_name : "Table Head",
+    start_tag : "thead",
+    end_tag : "/thead",
+    description : "The head of a table"
+  },
+  {
+    display_name : "Table Body",
+    start_tag : "tbody",
+    end_tag : "/tbody",
+    description : "The body of a table"
+  },
+  {
+    display_name : "Table Row",
+    start_tag : "tr",
+    end_tag : "/tr",
+    description : "A table row"
+  },
+  {
+    display_name : "Table Cell",
+    start_tag : "td",
+    end_tag : "/td",
+    description : "A cell in a table"
+  },
+  {
+    display_name : "Line Break",
+    start_tag : "br",
+    end_tag : "",
+    description : "Begins on a new line"
+  },
+  {
+    display_name : "Unordered List",
+    start_tag : "ul",
+    end_tag : "/ul",
+    description : "A bulleted list"
+  },
+  {
+    display_name : "Ordered List",
+    start_tag : "ol",
+    end_tag : "/ol",
+    description : "A numbered list"
+  },
+  {
+    display_name : "List Item",
+    start_tag : "li",
+    end_tag : "/li",
+    description : "An item in an ordered or unordered list"
+  },
+  {
+    display_name : "Div",
+    start_tag : "div",
+    end_tag : "/div",
+    description : "Used to group elements or put them into divisions"
+  },
+  {
+    display_name : "Span",
+    start_tag : "span",
+    end_tag : "/span",
+    description : "Used to group elements (similar to Divs but doesn't break the flow)"
+  },
+  {
+    display_name : "Document Type",
+    start_tag : "!DOCTYPE",
+    end_tag : "",
+    description : "Used to specify the type of document",
+    default_atts : [
+      {
+        name : "html",
+        val : ""
+      }
+  ]
+  }
+];
+};
+eltLoad();
 function toggle_auto_in(){
   var on = document.getElementById("inner-updater-on");
   var off = document.getElementById("inner-updater-off");
@@ -494,6 +731,7 @@ function getElt(gl_id){
   for(var i=0; i< global_elts.length; i++)if(global_elts[i].global_id == gl_id)return global_elts[i];
 }
 function elt(start_tag,end_tag,display_name){
+  if(!elements_loaded)eltLoad();
   this.global_id = global_elts.length;
   this.display_name = display_name || find_display_name(start_tag) || start_tag;
   this.start_tag = start_tag;
@@ -502,7 +740,7 @@ function elt(start_tag,end_tag,display_name){
   this.children = [];
   this.show_children = true;
   this.parent = null;
-  this.atts = [];
+  this.atts = default_atts(start_tag);
   this.makeChild = function(child_start,child_end,child_display,index){
     if(index !== 0)index = index || this.children.length;
     var child = new elt(child_start,child_end,child_display);
@@ -726,200 +964,23 @@ function find_display_name(start_tag){
   }
   return start_tag;
 }
-elements = [
-  {
-    display_name : "[FORMAT] Bold",
-    start_tag : "b",
-    end_tag : "/b",
-    description : "Formats children text bold"
-  },
-  {
-    display_name : "[FORMAT] Italics",
-    start_tag : "i",
-    end_tag : "/i",
-    description : "Formats children text in italics"
-  },
-  {
-    display_name : "[FORMAT] Underline",
-    start_tag : "u",
-    end_tag : "/u",
-    description : "Underlines children text"
-  },
-  {
-    display_name : "HTML document",
-    start_tag : "html",
-    end_tag : "/html",
-    description : "The actual html document element"
-  },
-  {
-    display_name : "Head",
-    start_tag : "head",
-    end_tag : "/head",
-    description : "The html head tag"
-  },
-  {
-    display_name : "Title",
-    start_tag : "title",
-    end_tag : "/title",
-    description : "Sets the webpage title"
-  },
-  {
-    display_name : "Style",
-    start_tag : "style",
-    end_tag : "/style",
-    description : "An embedded CSS stylesheet"
-  },
-  {
-    display_name : "Body",
-    start_tag : "body",
-    end_tag : "/body",
-    description : "Element containing the page content"
-  },
-  {
-    display_name : "Paragraph",
-    start_tag : "p",
-    end_tag : "/p",
-    description : "A paragraph element"
-  },
-  {
-    display_name : "Heading 1",
-    start_tag : "h1",
-    end_tag : "/h1",
-    description : "The biggest heading"
-  },
-  {
-    display_name : "Heading 2",
-    start_tag : "h2",
-    end_tag : "/h2",
-    description : "The second biggest heading"
-  },
-  {
-    display_name : "Heading 3",
-    start_tag : "h3",
-    end_tag : "/h3",
-    description : "The third biggest heading"
-  },
-  {
-    display_name : "Heading 4",
-    start_tag : "h4",
-    end_tag : "/h4",
-    description : "The third smallest heading"
-  },
-  {
-    display_name : "Heading 5",
-    start_tag : "h5",
-    end_tag : "/h5",
-    description : "The second smallest heading"
-  },
-  {
-    display_name : "Heading 6",
-    start_tag : "h6",
-    end_tag : "/h6",
-    description : "The smallest heading"
-  },
-  {
-    display_name : "Image",
-    start_tag : "img",
-    end_tag : "",
-    description : "An image element"
-  },
-  {
-    display_name : "Text",
-    start_tag : "",
-    end_tag : "",
-    description : "Plain text(no tag)"
-  },
-  {
-    display_name : "Comment",
-    start_tag : "!--",
-    end_tag : "",
-    description : "An HTML comment (does nothing at all)"
-  },
-  {
-    display_name : "Link",
-    start_tag : "link",
-    end_tag : "",
-    description : "Usually used to load external resources, especially stylesheets"
-  },
-  {
-    display_name : "Hyperlink",
-    start_tag : "a",
-    end_tag : "/a",
-    description : "Usually opens a specified link when clicked on"
-  },
-  {
-    display_name : "Table",
-    start_tag : "table",
-    end_tag : "/table",
-    description : "Used to make tables"
-  },
-  {
-    display_name : "Table Head",
-    start_tag : "thead",
-    end_tag : "/thead",
-    description : "The head of a table"
-  },
-  {
-    display_name : "Table Body",
-    start_tag : "tbody",
-    end_tag : "/tbody",
-    description : "The body of a table"
-  },
-  {
-    display_name : "Table Row",
-    start_tag : "tr",
-    end_tag : "/tr",
-    description : "A table row"
-  },
-  {
-    display_name : "Table Cell",
-    start_tag : "td",
-    end_tag : "/td",
-    description : "A cell in a table"
-  },
-  {
-    display_name : "Line Break",
-    start_tag : "br",
-    end_tag : "",
-    description : "Begins on a new line"
-  },
-  {
-    display_name : "Unordered List",
-    start_tag : "ul",
-    end_tag : "/ul",
-    description : "A bulleted list"
-  },
-  {
-    display_name : "Ordered List",
-    start_tag : "ol",
-    end_tag : "/ol",
-    description : "A numbered list"
-  },
-  {
-    display_name : "List Item",
-    start_tag : "li",
-    end_tag : "/li",
-    description : "An item in an ordered or unordered list"
-  },
-  {
-    display_name : "Div",
-    start_tag : "div",
-    end_tag : "/div",
-    description : "Used to group elements or put them into divisions"
-  },
-  {
-    display_name : "Span",
-    start_tag : "span",
-    end_tag : "/span",
-    description : "Used to group elements (similar to Divs but doesn't break the flow)"
-  },
-  {
-    display_name : "Document Type",
-    start_tag : "!DOCTYPE",
-    end_tag : "",
-    description : "Used to specify the type of document"
+function atts_copy(arr){
+  arr = arr || [];
+  var new_att_arr = [];
+  for(var i=0; i<arr.length; i++){
+    var new_att = {name:"",val:""}
+    new_att.name = arr[i].name + "";
+    new_att.val = arr[i].val + "";
+    new_att_arr.push(new_att);
   }
-];
+  return new_att_arr;
+}
+function default_atts(start_tag){
+  for(var i=0; i< elements.length; i++){
+    if(elements[i].start_tag == start_tag)if(elements[i].default_atts)return atts_copy(elements[i].default_atts);else return [];
+  }
+  return [];
+}
 elements.sort(function(a,b){
   var nameA=a.display_name.toLowerCase(), nameB=b.display_name.toLowerCase()
 	if (nameA < nameB)
@@ -1202,7 +1263,7 @@ loadfunc = function(){
 window.onload = function(){
   loadfunc();
   //chrome.fileSystem.getVolumeList(function(arr){console.log(arr);})
-  loadHTML('<!DOCTYPE html><html><head><style></style></head><body bgcolor=black style="color:white;"><center><h1 style="color:white;">This is a simple website made by<i>WebGDE v1.0.3[ALPHA]</i></h1><p>WebGDE is a graphical webpage design enviroment. It can be used to either edit or create existing webpages whether they were made by WebGDE or not.</p><p>This is Free Open Source Software.</p><p>Get the source code from my Github<a href="https://www.github.com/WarrenHood/WebGDE"style="color:green;">repo</a></p><div style="float:right;">Developer : Warren Hood<br>Email : nullbyte001@gmail.com</div></center></body></html>');
+  loadHTML('<!DOCTYPE html><html><head><style></style></head><body bgcolor=black style="color:white;"><center><h1 style="color:white;">This is a simple website made by<i>WebGDE v2.0.2[BETA]</i></h1><p>WebGDE is a graphical webpage design enviroment. It can be used to either edit or create existing webpages whether they were made by WebGDE or not.</p><p>This is Free Open Source Software.</p><p>Get the source code from my Github<a href="https://www.github.com/WarrenHood/WebGDE"style="color:green;">repo</a></p><div style="float:right;">Developer : Warren Hood<br>Email : nullbyte001@gmail.com</div></center></body></html>');
 };
 if(constant_layout_update)setInterval(function(){
   if(window.innerWidth != last_width || window.innerHeight != last_height)
