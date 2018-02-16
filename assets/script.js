@@ -3,7 +3,7 @@ elements_loaded = false;
 tree_selected = null;
 element_chosen = null;
 tab_spaces = 4;
-constant_layout_update = true;
+constant_layout_update = false;//true;
 doc = new elt("","","File");
 quick_load = true; //Quick load broken
 keep_newlines = false;
@@ -1043,6 +1043,7 @@ loadfunc = function(){
   inner_pane = document.getElementById("inner-pane");
   inner_input = document.getElementById("inner-input");
   io_menu = document.getElementById("io-menu");
+  toggler = document.getElementById("toggler");
   io_menu.style.width = window.innerWidth*0.2 -2 + "px";
   io_menu.style.height = window.innerHeight*0.5 - 2 + "px";
   io_menu.style.top = window.innerHeight*0.5 + 1 + "px";
@@ -1052,11 +1053,12 @@ loadfunc = function(){
   element_head.style.left = window.innerWidth*0.45 + 1 + "px";
   element_search.style.height = window.innerHeight*0.04 - 2 + "px";
   element_search.style.width = window.innerWidth*0.25 - 2 + "px";
-  element_search.style.top = window.innerHeight*0.05 + 1 + "px";
+  element_search.style.top = window.innerHeight*0.1 + 1 + "px";
   element_search.style.left = window.innerWidth*0.45 + 1 + "px";
   element_pane.style.width = window.innerWidth*0.25 - 2 + "px";
-  element_pane.style.height = window.innerHeight*0.41 - 2 + "px";
-  element_pane.style.top = window.innerHeight*0.09 + 1 + "px";
+  element_pane.style.height = window.innerHeight*0.36 - 2 + "px";
+  toggler.style.top = window.innerHeight*0.05 + "px";
+  element_pane.style.top = window.innerHeight*0.14 + 1 + "px";
   element_pane.style.left = window.innerWidth*0.45 + 1 + "px";
   preview_pane.style.height = window.innerHeight*0.5 - 2 + "px";
   preview_pane.style.width = window.innerWidth*0.45 - 2 + "px";
@@ -1262,6 +1264,7 @@ loadfunc = function(){
 }
 window.onload = function(){
   loadfunc();
+  setTimeout(loadfunc,2000);
   //chrome.fileSystem.getVolumeList(function(arr){console.log(arr);})
   loadHTML('<!DOCTYPE html><html><head><style></style></head><body bgcolor=black style="color:white;"><center><h1 style="color:white;">This is a simple website made by<i>WebGDE v2.0.2[BETA]</i></h1><p>WebGDE is a graphical webpage design enviroment. It can be used to either edit or create existing webpages whether they were made by WebGDE or not.</p><p>This is Free Open Source Software.</p><p>Get the source code from my Github<a href="https://www.github.com/WarrenHood/WebGDE"style="color:green;">repo</a></p><div style="float:right;">Developer : Warren Hood<br>Email : nullbyte001@gmail.com</div></center></body></html>');
 };

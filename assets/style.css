@@ -4,6 +4,9 @@ html, body {
   overflow:hidden;
   user-select:none;
 }
+h1 {
+  font-size: 5pt;
+}
 #tree_table{
   z-index:0;
   width:inherit;
@@ -75,9 +78,9 @@ display: none;
   padding-right:2px;
 }
 #toggler{
-  /*position:absolute;
+  position:absolute;
   top:0px;
-  left:0px;*/
+  left:0px;
   float:left;
   text-align:center;
   cursor:pointer;

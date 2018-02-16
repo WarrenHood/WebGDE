@@ -19,7 +19,7 @@
       Webpage Preview
     </iframe>
     <div id="html-tree-head">
-      Tree Editor
+      
       <div id="addout" class="treebutton parent-center">
         <div class="center">
         Wrap
@@ -48,12 +48,12 @@
     </div>
     <div id="html-tree">
     </div>
-    <div id="attribute-head">Attribute Editor
+    <div id="attribute-head">
       <div id="att-rem" class="parent-center" onclick="if((last_att === 0 || last_att) && tree_selected)tree_selected.removeAtt(last_att);last_att=null;update_pane();"><div class="center">Delete</div></div>
       <div id="att-add" class="parent-center" onclick="if(tree_selected){tree_selected.attEdit('','');update_pane();document.getElementById('att_name_'+(tree_selected.atts.length-1)).focus();}"><div class="center">Add</div></div>
     </div>
     <div id="attribute-editor"></div>
-    <div id="element-head">Element Chooser<div id="toggler" class="off"><div class="parent-center" style="height:inherit;"><div style="height:fit-content;" class="center">Specify Own Element</div></div></div></div>
+    <div id="element-head">Element Chooser<div id="toggler" class="off"><div class="parent-center" style="height:inherit;"><div style="height:fit-content;font-size:10pt;" class="center">Specify Own Element</div></div></div></div>
     <input id="element-search"  onkeyup="search_elt();"value="Search for elements..." onblur="javascript: document.getElementById('element-search').value = 'Search for elements...';" onfocus="javascript: document.getElementById('element-search').value = '';search_elt();"></input>
     <div id="element-chooser"></div>
     <div id="inner-head">
