@@ -161,6 +161,13 @@ display: none;
   text-align: center;
   font-size:4vh;
 }
+#treetitle{
+  background:rgba(0,0,0,0.5);
+  position:absolute;
+  border:1px solid black;
+  text-align: center;
+  font-size:4vh;
+}
 #inner-head{
   background:rgba(0,0,0,0.5);
   position:absolute;
