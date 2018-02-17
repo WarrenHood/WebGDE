@@ -8,6 +8,72 @@ doc = new elt("","","File");
 quick_load = true; //Quick load broken
 keep_newlines = false;
 auto_in_up = false;
+function dialog(title,htm,buttons){
+	var container = document.getElementById("dialogs");
+	var innerHTM = "<div \
+	style='\
+	height:fit-content;\
+	width:"+window.innerWidth*0.8+"px;\
+	position:absolute;\
+	top:"+window.innerHeight*0.25+"px;\
+	left:"+window.innerWidth*0.1+"px;\
+	background:white;\
+	z-index:10;\
+	\
+	'>";
+	innerHTM  += "<div class = 'parent-center' style='\
+	width:inherit;\
+	overflow-x:hidden;\
+	height:"+window.innerHeight*0.5*0.2+"px;\
+	background:teal;\
+	color:white;\
+	float:top;\
+	text-align:center;\
+	'><span style='height:fit-content;width:fit-content;margin:0px;padding:0px;' class='center'>"+title+"</span></div>";
+	innerHTM += "<div style='\
+	width:inherit;\
+	overflow-y:auto;\
+	height:"+window.innerHeight*0.5*0.6+"px;\
+	background:grey;\
+	color:white;\
+	float:top;\
+	text-align:center;\
+	'>"+htm+"</div>";
+	innerHTM += "<div style='\
+	overflow-x:auto;\
+	width:inherit;\
+	height:fit-content;\
+	background:grey;\
+	color:white;\
+	float:top;\
+	text-align:center;\
+	'>";
+	for(var i=0;i<buttons.length;i++){
+		innerHTM += "<div\
+		onclick='("+buttons[i].func+")();' \
+		style='\
+		width:fit-content;\
+		height:fit-content;\
+		background:white;\
+		border:1px solid black;\
+		margin:5px;\
+		padding:10px;\
+		color:black;\
+		display:inline;\
+		float:center;\
+		\
+		'>"+buttons[i].text+"</div>";
+	};
+	innerHTM += "</div>";
+	innerHTM += "</div>";
+	container.innerHTML = innerHTM;
+}
+function sizeChange(p){
+	var elts = document.getElementsByClassName("scalable");
+	for(var i=0;i<elts.length;i++){
+		elts[i].style.fontSize = p+"%";
+	}
+}
 function eltLoad(){
   elements_loaded = true;
   elements = [
@@ -926,11 +992,11 @@ function mapOut(root,level){
   );
   var str = "<tr>"+stringrep("<td style='"+init_block_style+"'></td>",level) +"<td><div style='\
   "+((tree_selected && root == tree_selected)?
-  "color:black;background:purple;":
-  "color:white;background:purple;")
+  "color:orange;background:black;":
+  "color:white;background:black;")
   +
   "\
-    border:0.5px solid violet;border-right:none;\
+    border:0.5px solid peach;border-right:none;\
     height:inherit;width:fit-content;z-index:1;  '\
    onclick='"+left_click+"' \
    oncontextmenu=\""+right_click+"\">"+root.display_name+"</div></td>" + stringrep("<td style='border:none;'></td>",getDepth(doc)*2-1-level)+"</tr>";
@@ -1029,6 +1095,17 @@ function loadElementChooser(){
   element_pane.innerHTML = htm;
 }
 loadfunc = function(){
+  /*dialog("Title","Message",
+  [
+  {
+	  text : "Okay",
+	  func : function(){
+		  document.getElementById("dialogs").innerHTML = "";
+		  }
+  }
+  ]
+  );*/
+  atttitle = document.getElementById("atttitle");
   treetitle = document.getElementById("treetitle");
   last_width = window.innerWidth;
   last_height = window.innerHeight;
@@ -1076,24 +1153,33 @@ loadfunc = function(){
   treetitle.style.top = "1px";
   treetitle.style.left = window.innerWidth*0.7 + "px";
   attribute_editor.style.left = window.innerWidth*0.7 + 1 + "px";
-  attribute_editor.style.height = window.innerHeight*0.45 - 2 + "px";
-  attribute_editor.style.width = window.innerWidth*0.3 - 2 + "px";
-  attribute_editor.style.top = window.innerHeight*0.55 + 1 + "px";
+  attribute_editor.style.height = window.innerHeight*0.4 - 2 + "px";
+  attribute_editor.style.width = window.innerWidth*0.3 - 3 + "px";
+  attribute_editor.style.top = window.innerHeight*0.6 + 1 + "px";
   attribute_head.style.height = window.innerHeight*0.05 -2 + "px";
   attribute_head.style.width = window.innerWidth*0.3 - 3 + "px";
-  attribute_head.style.top = window.innerHeight*0.5 + 1 + "px";
+  attribute_head.style.top = window.innerHeight*0.55 + 1 + "px";
   attribute_head.style.left = window.innerWidth*0.7 + 1 + "px";
+  atttitle.style.width = window.innerWidth*0.3 - 3 + "px";
+  atttitle.style.height = window.innerHeight*0.05 - 2 + "px";
+  atttitle.style.top = window.innerHeight*0.5 + 1 + "px";
+  atttitle.style.left = window.innerWidth*0.7 + 1 + "px";
   inner_head.style.width = window.innerWidth*0.5 - 2 + "px";
   inner_head.style.height = window.innerHeight*0.05 - 2 + "px";
   inner_head.style.left = window.innerWidth*0.2 + 1 + "px";
-  inner_head.style.top = window.innerHeight*0.5 + 1 + "px";
+  inner_head.style.top = window.innerHeight*0.55 + 1 + "px";
   inner_pane.style.width = window.innerWidth*0.5 - 2 + "px";
-  inner_pane.style.height = window.innerHeight*0.45 - 2 + "px";
+  inner_pane.style.height = window.innerHeight*0.4 - 2 + "px";
   inner_pane.style.left = window.innerWidth*0.2 + 1 + "px";
-  inner_pane.style.top = window.innerHeight*0.55 + 1 + "px";
+  inner_pane.style.top = window.innerHeight*0.6 + 1 + "px";
   inner_heading = document.getElementById("inner-heading");
-  inner_heading.style.left = ((window.innerWidth*0.5-2)-inner_heading.clientWidth)/2 + "px";
+  //inner_heading.style.left = ((window.innerWidth*0.5-2)-inner_heading.clientWidth)/2 + "px";
+  inner_heading.style.width = window.innerWidth*0.5 - 2 + "px";
+  inner_heading.style.height = window.innerHeight*0.05 - 2 + "px";
+  inner_heading.style.top = window.innerHeight*0.5 + 1 + "px";
+  inner_heading.style.left = window.innerWidth*0.2 + 1 + "px"; 
   inner_wrapper = document.getElementById("wrapper");
+  sizeChange(90);
   loadElementChooser();
   cm_editor = CodeMirror.fromTextArea(inner_input, {
     lineNumbers: true,
@@ -1248,9 +1334,27 @@ loadfunc = function(){
     document.getElementById("fileselect").click();
   }
   document.getElementById("page_saver").onclick = function(){
-    var fname = prompt("Download as? (.html added automatically)");
-    if(!fname)return;
-    download(fname+".html",htmlify(doc));
+	dialog("Download as...",
+	"Enter the filename of the file to download(.html added automatically)<br/><input id='fname' size=20/>",
+  [
+  {
+	  text : "Download",
+	  func : function(){
+		var fname = document.getElementById("fname").value;
+    	if(!fname)return;
+    	download(fname+".html",htmlify(doc));
+		document.getElementById("dialogs").innerHTML = "";
+	  }
+  },
+  {
+	  text : "Cancel",
+	  func : function(){
+		  document.getElementById("dialogs").innerHTML = "";
+		  }
+  }
+  ]
+  );
+    
   }
   document.getElementById("fileselect").onchange = function(e){
     var file = document.getElementById("fileselect").files[0];
@@ -1271,7 +1375,7 @@ window.onload = function(){
   loadfunc();
   setTimeout(loadfunc,2000);
   //chrome.fileSystem.getVolumeList(function(arr){console.log(arr);})
-  loadHTML('<!DOCTYPE html><html><head><style></style></head><body bgcolor=black style="color:white;"><center><h1 style="color:white;">This is a simple website made by<i>WebGDE v2.0.3[BETA]</i></h1><p>WebGDE is a graphical webpage design enviroment. It can be used to either edit or create existing webpages whether they were made by WebGDE or not.</p><p>This is Free Open Source Software.</p><p>Get the source code from my Github<a href="https://www.github.com/WarrenHood/WebGDE"style="color:green;">repo</a></p><div style="float:right;">Developer : Warren Hood<br>Email : nullbyte001@gmail.com</div></center></body></html>');
+  loadHTML('<!DOCTYPE html><html><head><style></style></head><body bgcolor=black style="color:white;"><center><h1 style="color:white;">This is a simple website made by<i>WebGDE v2.0.4[BETA]</i></h1><p>WebGDE is a graphical webpage design enviroment. It can be used to either edit or create existing webpages whether they were made by WebGDE or not.</p><p>This is Free Open Source Software.</p><p>Get the source code from my Github<a href="https://www.github.com/WarrenHood/WebGDE"style="color:green;">repo</a></p><div style="float:right;">Developer : Warren Hood<br>Email : nullbyte001@gmail.com</div></center></body></html>');
 };
 if(constant_layout_update)setInterval(function(){
   if(window.innerWidth != last_width || window.innerHeight != last_height)

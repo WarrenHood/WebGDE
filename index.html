@@ -15,10 +15,11 @@
     <script type="text/javascript" src="assets/script.js"></script>
   </head>
   <body>
+	<span id="dialogs"></span>
     <iframe id="preview">
-      Webpage Preview
+      <span class="scalable">Webpage Preview</span>
     </iframe>
-	<div id="treetitle">Tree Editor</div>
+	<div id="treetitle"><span class="scalable">Tree Editor</span></div>
     <div id="html-tree-head">
       <div id="addout" class="treebutton parent-center">
         <div class="center">
@@ -48,18 +49,19 @@
     </div>
     <div id="html-tree">
     </div>
+	<div id="atttitle"><span class="scalable">Attribute Editor</span></div>
     <div id="attribute-head">
       <div id="att-rem" class="parent-center" onclick="if((last_att === 0 || last_att) && tree_selected)tree_selected.removeAtt(last_att);last_att=null;update_pane();"><div class="center">Delete</div></div>
       <div id="att-add" class="parent-center" onclick="if(tree_selected){tree_selected.attEdit('','');update_pane();document.getElementById('att_name_'+(tree_selected.atts.length-1)).focus();}"><div class="center">Add</div></div>
     </div>
     <div id="attribute-editor"></div>
-    <div id="element-head">Element Chooser<div id="toggler" class="off"><div class="parent-center" style="height:inherit;"><div style="height:fit-content;font-size:10pt;" class="center">Specify Own Element</div></div></div></div>
+    <div id="element-head"><span class="scalable">Element Chooser</span><div id="toggler" class="off"><div class="parent-center" style="height:inherit;"><div style="height:fit-content;font-size:10pt;" class="center">Specify Own Element</div></div></div></div>
     <input id="element-search"  onkeyup="search_elt();"value="Search for elements..." onblur="javascript: document.getElementById('element-search').value = 'Search for elements...';" onfocus="javascript: document.getElementById('element-search').value = '';search_elt();"></input>
-    <div id="element-chooser"></div>
-    <div id="inner-head">
+    <div id="element-chooser" class="scalable"></div>
+    <div id="inner-heading"><span class="scalable">Attribute Editor</span></div>
+	<div id="inner-head">
       <div id="wrapper">Wrap Selected</div>
-      <span id="inner-heading" style="position:absolute;height:inherit;width:fit-content;top:0px;">Inner HTML Editor</span>
-      <div id="inner-updater" style="font-size:1vw;height:inherit;width:fit-content;float:right;">
+        <div id="inner-updater" style="font-size:1vw;height:inherit;width:fit-content;float:right;">
         <div class="parent-center" style="height:inherit;width:fit-content;float:left;background:rgba(0,0,0,0);color:white;border-left:0.1px solid black;"><div style="height:fit-content;" class="center">Update while typing</div></div>
         <div class="parent-center" onclick="toggle_auto_in()" id="inner-updater-off" style="cursor:pointer;height:inherit;width:fit-content;float:left;"><div style="height:fit-content;" class="center">Off</div></div>
         <div class="parent-center" onclick="toggle_auto_in()" id="inner-updater-on" style="cursor:pointer;height:inherit;width:fit-content;float:left;"><div style="height:fit-content;" class="center">On</div></div>
